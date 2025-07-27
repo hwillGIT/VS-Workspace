@@ -1,0 +1,168 @@
+{
+    "id": "com.mattermost.msteams-sync",
+    "name": "MS Teams",
+    "description": "Break through siloes in a mixed Mattermost and Teams environment by forwarding real-time chat notifications from Teams to Mattermost.",
+    "homepage_url": "https://github.com/mattermost/mattermost-plugin-msteams",
+    "support_url": "https://github.com/mattermost/mattermost-plugin-msteams/issues",
+    "release_notes_url": "https://github.com/mattermost/mattermost-plugin-msteams/releases/tag/v2.1.0",
+    "icon_path": "assets/icon.svg",
+    "version": "2.1.0",
+    "min_server_version": "9.8.0",
+    "server": {
+        "executables": {
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "linux-arm64": "server/dist/plugin-linux-arm64"
+        },
+        "executable": ""
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "",
+        "footer": "",
+        "settings": [
+            {
+                "key": "tenantId",
+                "display_name": "Tenant ID",
+                "type": "text",
+                "help_text": "Microsoft Teams Tenant ID",
+                "placeholder": "",
+                "default": "",
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "clientId",
+                "display_name": "Client ID",
+                "type": "text",
+                "help_text": "Microsoft Teams Client ID",
+                "placeholder": "",
+                "default": "",
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "clientSecret",
+                "display_name": "Client Secret",
+                "type": "text",
+                "help_text": "Microsoft Teams Client Secret",
+                "placeholder": "",
+                "default": "",
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "encryptionKey",
+                "display_name": "At Rest Encryption Key:",
+                "type": "generated",
+                "help_text": "The AES encryption key used to encrypt stored access tokens",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "webhookSecret",
+                "display_name": "Webhook secret",
+                "type": "generated",
+                "help_text": "Microsoft Teams will use this secret to send messages to Mattermost",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "evaluationAPI",
+                "display_name": "Use the evaluation API pay model",
+                "type": "bool",
+                "help_text": "The evaluation API pay model only allows you to get a limited number of change notifications. Be sure your system keeps them low if you enable this setting",
+                "placeholder": "",
+                "default": false,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "syncNotifications",
+                "display_name": "Sync notifications",
+                "type": "bool",
+                "help_text": "Sync notifications of chat messages for any connected user that enables the feature.",
+                "placeholder": "",
+                "default": true,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "maxSizeForCompleteDownload",
+                "display_name": "Maximum size of attachments to support complete one time download (in MB)",
+                "type": "number",
+                "help_text": "Set the maximum size for attachments that can be loaded into the memory. Attachments bigger than this size will be streamed from MS Teams to Mattermost",
+                "placeholder": "",
+                "default": 20,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "bufferSizeForFileStreaming",
+                "display_name": "Buffer size for streaming files (in MB)",
+                "type": "number",
+                "help_text": "Set the buffer size for streaming files from MS Teams to Mattermost",
+                "placeholder": "",
+                "default": 20,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "connectedUsersAllowed",
+                "display_name": "Max Connected Users",
+                "type": "number",
+                "help_text": "The maximum number of users that may connect their MS Teams account. Once connected, users may reconnect at any time. (Set to 0 to disable new connections.)",
+                "placeholder": "",
+                "default": 1000,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "connectedUsersMaxPendingInvites",
+                "display_name": "Max Pending Invitations",
+                "type": "number",
+                "help_text": "Invite pool size: the maximum number of connection invites that may be pending at a given time. When specified, connection invite direct messages will be sent to users as they become active, up to the maximum specified here. As invited users connect, spaces in the invite pool will open up and more invites will be sent out. Once invited, users may connect at any time. (Set to 0 or leave empty to disable connection invites.)",
+                "placeholder": "",
+                "default": 0,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "connectedUsersRestricted",
+                "display_name": "New User Connections: Restricted",
+                "type": "bool",
+                "help_text": "When true, only whitelisted users may connect their account.",
+                "placeholder": "",
+                "default": false,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "connectedUsersWhitelist",
+                "display_name": "New User Connections: Whitelist",
+                "type": "custom",
+                "help_text": "",
+                "placeholder": "",
+                "default": "",
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "ConnectedUsersReportDownload",
+                "display_name": "Download Report",
+                "type": "custom",
+                "help_text": "",
+                "placeholder": "",
+                "default": "",
+                "hosting": "",
+                "secret": false
+            }
+        ],
+        "sections": null
+    }
+}

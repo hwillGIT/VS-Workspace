@@ -1,0 +1,20 @@
+# Standard ignores
+**/.git
+**/.github
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+**/.DS_Store
+**/Thumbs.db
+
+# Project-specific ignores
+/data/
+/volumes/
+/output/
+/mattermost-server/
+/patterns/
+/webtester/
+/lib/
+/npm_deps.txt
+/Project1.code-workspace
+/com/

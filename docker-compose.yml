@@ -1,0 +1,138 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:12
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mmuser
+      POSTGRES_PASSWORD: mostest
+      POSTGRES_DB: mattermost_test
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "mmuser", "-d", "mattermost_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - mm-dev
+
+  mattermost:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8065:8065"
+      - "8067:8067"
+      - "8074:8074"
+      - "8075:8075"
+      - "8443:8443/udp"
+    environment:
+      TZ: "America/New_York"
+      NODE_TZ: "America/New_York"
+      MM_SERVICESETTINGS_DEFAULTTIMEZONE: "America/New_York"
+      MM_TIMEZONE: "America/New_York"
+      MM_LOCALIZATION_DEFAULTTIMEZONE: "America/New_York"
+      MM_USERNAME: mmuser
+      MM_PASSWORD: mostest
+      MM_DBNAME: mattermost_test
+      MM_SQLSETTINGS_DRIVERNAME: postgres
+      MM_SQLSETTINGS_DATASOURCE: "postgres://mmuser:mostest@postgres:5432/mattermost_test?sslmode=disable"
+      MM_SERVICESETTINGS_SITEURL: "http://localhost:8065"
+      MM_SERVICESETTINGS_LISTENADDRESS: ":8065"
+      MM_SERVICESETTINGS_ENABLEDEVELOPER: "true"
+      MM_SERVICESETTINGS_ENABLETESTING: "true"
+      MM_SERVICESETTINGS_ENABLEIPV6: "false"
+      MM_SERVICESETTINGS_ENABLEREMINDERS: "true"
+      MM_SERVICESETTINGS_ALLOWEDUNTRUSTEDINTERNALCONNECTIONS: "*"
+      MM_PLUGINSETTINGS_ENABLED: "true"
+      MM_PLUGINSETTINGS_ENABLEUPLOADS: "true"
+      MM_PLUGINSETTINGS_DIRECTORY: /mattermost/plugins
+      MM_PLUGINSETTINGS_CLIENTDIRECTORY: /mattermost/client/plugins
+      MM_PLUGINSETTINGS_AUTOMATICPREPACKAGEDPLUGINS: "true"
+      MM_PLUGINSETTINGS_ENABLEMARKETPLACE: "true"
+      MM_PLUGINSETTINGS_INSTALLEDPLUGINSTATE_FOCALBOARD: "true"
+      MM_PLUGINSETTINGS_PREPACKAGEDPLUGINS_FOCALBOARD: "true"
+      MM_PLUGINSETTINGS_INSTALLEDPLUGINSTATE_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND: "true"
+      MM_PLUGINSETTINGS_PLUGINS_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND_TIMEZONE: "America/New_York"
+      MM_PLUGINSETTINGS_PLUGINS_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND_DEFAULTTIMEZONE: "America/New_York"
+      MM_PLUGINSETTINGS_PLUGINS_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND_FORCELOCALTIME: "true"
+      MM_PLUGINSETTINGS_PLUGINS_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND_LOCATION: "America/New_York"
+      MM_PLUGINSETTINGS_PLUGINS_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND_TIMEFORMAT: "12"
+      MM_PLUGINSETTINGS_PLUGINS_COM_GITHUB_SCOTTLEEDAVIS_MATTERMOST_PLUGIN_REMIND_USESYSTEMTIMEZONE: "true"
+      MM_FEATUREFLAGS_BOARDSREMINDER: "true"
+      MM_FEATUREFLAGS_BOARDSUNFURL: "true"
+      MM_FEATUREFLAGS_ENABLEBOARDS: "true"
+      MM_LOGSETTINGS_CONSOLELEVEL: "DEBUG"
+      MM_FILESETTINGS_ARCHIVERECURSION: "false"
+      MM_FILESETTINGS_DIRECTORY: "/mattermost/data"
+      MM_FILESETTINGS_ENABLEFILESEARCH: "true"
+      MM_FILESETTINGS_MAXFILESIZE: "104857600"
+      MM_FILESETTINGS_MAXMEMORYCACHE: "10485760"
+      MM_BLEVESETTINGS_INDEXDIR: "/mattermost/bleve-indexes"
+      MM_BLEVESETTINGS_ENABLEINDEXING: "true"
+      MM_BLEVESETTINGS_ENABLESEARCHING: "true"
+      MM_BLEVESETTINGS_ENABLEAUTOCOMPLETE: "true"
+    volumes:
+      - ./data/config:/mattermost/config
+      - ./data/data:/mattermost/data
+      - ./data/logs:/mattermost/logs
+      - ./data/plugins:/mattermost/plugins
+      - ./data/client-plugins:/mattermost/client/plugins
+      - ./data/bleve-indexes:/mattermost/bleve-indexes
+    networks:
+      - mm-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  odoo-db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      TZ: "America/New_York"
+      POSTGRES_DB: ${ODOO_DB_NAME}
+      POSTGRES_USER: ${ODOO_DB_USER}
+      POSTGRES_PASSWORD: ${ODOO_DB_PASSWORD}
+    volumes:
+      - ./volumes/db/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${ODOO_DB_USER}", "-d", "${ODOO_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - odoo-network
+
+  odoo-app:
+    image: odoo:16.0
+    restart: unless-stopped
+    ports:
+      - "8069:8069"
+    environment:
+      TZ: "America/New_York"
+      ODOO_DB_NAME: ${ODOO_DB_NAME}
+      ODOO_DB_USER: ${ODOO_DB_USER}
+      ODOO_DB_PASSWORD: ${ODOO_DB_PASSWORD}
+      ODOO_DB_HOST: odoo-db
+      ODOO_DB_PORT: 5432
+    command: odoo -c /etc/odoo/odoo.conf
+    volumes:
+      - ./volumes/odoo/addons:/mnt/extra-addons
+      - ./volumes/odoo/config:/etc/odoo
+      - ./volumes/odoo/data:/var/lib/odoo
+    depends_on:
+      odoo-db:
+        condition: service_healthy
+    networks:
+      - odoo-network
+
+networks:
+  mm-dev:
+    driver: bridge
+  odoo-network:
+    driver: bridge

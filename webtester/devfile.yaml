@@ -1,0 +1,62 @@
+commands:
+- exec:
+    commandLine: mvn clean -Dmaven.repo.local=/home/user/.m2/repository package -Dmaven.test.skip=true
+    component: tools
+    group:
+      isDefault: true
+      kind: build
+    workingDir: ${PROJECT_SOURCE}
+  id: build
+- exec:
+    commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository spring-boot:run
+    component: tools
+    group:
+      isDefault: true
+      kind: run
+    workingDir: ${PROJECT_SOURCE}
+  id: run
+- exec:
+    commandLine: java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=${DEBUG_PORT},suspend=n
+      -jar target/*.jar
+    component: tools
+    group:
+      isDefault: true
+      kind: debug
+    workingDir: ${PROJECT_SOURCE}
+  id: debug
+components:
+- container:
+    endpoints:
+    - name: 8070-tcp
+      targetPort: 8070
+    env:
+    - name: DEBUG_PORT
+      value: "5858"
+    image: quay.io/eclipse/che-java11-maven:next
+    memoryLimit: 768Mi
+    mountSources: true
+    volumeMounts:
+    - name: m2
+      path: /home/user/.m2
+  name: tools
+- name: m2
+  volume:
+    size: 3Gi
+metadata:
+  description: Spring Boot® using Java
+  displayName: Spring Boot®
+  globalMemoryLimit: 2674Mi
+  icon: https://spring.io/images/projects/spring-edf462fec682b9d48cf628eaf9e19521.svg
+  language: java
+  name: webtester
+  projectType: spring
+  tags:
+  - Java
+  - Spring
+  version: 1.1.0
+schemaVersion: 2.1.0
+starterProjects:
+- git:
+    remotes:
+      origin: https://github.com/odo-devfiles/springboot-ex.git
+  name: springbootproject

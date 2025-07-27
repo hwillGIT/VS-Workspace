@@ -1,0 +1,56 @@
+{
+  "id": "com.mattermost.mailermost-plugin",
+  "name": "Mailermost",
+  "description": "Replying to notification emails sends the reply as a post in Mattermost.",
+  "version": "0.1.0",
+  "min_server_version": "5.10.0",
+  "server": {
+    "executables": {
+      "linux-amd64": "server/dist/plugin-linux-amd64",
+      "darwin-amd64": "server/dist/plugin-darwin-amd64",
+      "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+    }
+  },
+  "settings_schema": {
+    "header": "Configure the IMAP connection information for the email address that response emails will be sent to. The email address used is the address set in `EmailSettings.ReplyToAddress` in the Mattermost config.",
+    "footer": "",
+    "settings": [
+      {
+        "key": "server",
+        "display_name": "IMAP Server and Port",
+        "type": "text",
+        "placeholder": "imap.example.com:443"
+      },
+      {
+        "key": "security",
+        "display_name": "IMAP Security",
+        "type": "dropdown",
+        "default": "ssl",
+        "options": [
+          {
+            "display_name": "None",
+            "value": "none"
+          },
+          {
+            "display_name": "SSL",
+            "value": "ssl"
+          },
+          {
+            "display_name": "TLS",
+            "value": "tls"
+          }
+        ]
+      },
+      {
+        "key": "password",
+        "display_name": "IMAP Password",
+        "type": "text"
+      },
+      {
+        "key": "polling_interval",
+        "display_name": "Polling Interval (seconds)",
+        "type": "number"
+      }
+    ]
+  }
+}

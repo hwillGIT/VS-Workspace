@@ -1,0 +1,60 @@
+{
+    "id": "com.mattermost.msteamsmeetings",
+    "name": "MS Teams Meetings",
+    "description": "MS Teams Meetings audio and video conferencing plugin for Mattermost 8.1+.",
+    "homepage_url": "https://mattermost.com/pl/mattermost-plugin-msteams-meetings",
+    "support_url": "https://github.com/mattermost/mattermost-plugin-msteams-meetings/issues",
+    "release_notes_url": "https://github.com/mattermost/mattermost-plugin-msteams-meetings/releases/tag/v2.2.0",
+    "icon_path": "assets/profile.svg",
+    "version": "2.2.0",
+    "min_server_version": "8.1.0",
+    "server": {
+        "executables": {
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        },
+        "executable": ""
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "Please refer to installation instructions [**here**](https://mattermost.com/pl/mattermost-plugin-msteams-meetings) for creating a new Application in the Azure Portal.",
+        "footer": "",
+        "settings": [
+            {
+                "key": "OAuth2Authority",
+                "display_name": "Azure - Directory (tenant) ID:",
+                "type": "text",
+                "help_text": "Copy the **Directory (tenant) ID** value from the App Overview Page in the Azure Portal.",
+                "placeholder": "",
+                "default": null
+            },
+            {
+                "key": "OAuth2ClientId",
+                "display_name": "Azure - Application (client) ID:",
+                "type": "text",
+                "help_text": "Copy the **Application (client) ID** value from the App Overview Page in the Azure Portal.",
+                "placeholder": "",
+                "default": ""
+            },
+            {
+                "key": "OAuth2ClientSecret",
+                "display_name": "Azure - Application (client) Secret:",
+                "type": "text",
+                "help_text": "Copy the **Client Secret Value** (not the ID) that was created on the App's **Certificates and Secrets** tab.",
+                "placeholder": "",
+                "default": ""
+            },
+            {
+                "key": "EncryptionKey",
+                "display_name": "At Rest Encryption Key:",
+                "type": "generated",
+                "help_text": "The AES encryption key used to encrypt stored access tokens. Will be auto-generated if left-blank the first time you configure the plugin. Re-generating the key will clear all previously stored access tokens and all users will be required to re-connect to MS Teams.",
+                "placeholder": "",
+                "default": null
+            }
+        ]
+    }
+}

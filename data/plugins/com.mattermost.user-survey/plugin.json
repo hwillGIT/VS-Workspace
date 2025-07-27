@@ -1,0 +1,39 @@
+{
+    "id": "com.mattermost.user-survey",
+    "name": "User Survey",
+    "description": "A plugin designed for gathering user feedback on Mattermost and related topics.",
+    "homepage_url": "https://github.com/mattermost/mattermost-plugin-user-survey",
+    "support_url": "https://github.com/mattermost/mattermost-plugin-user-survey/issues",
+    "release_notes_url": "https://github.com/mattermost/mattermost-plugin-user-surveyreleases/tag/v1.1.1",
+    "icon_path": "assets/icon.svg",
+    "version": "1.1.1",
+    "min_server_version": "6.2.1",
+    "server": {
+        "executables": {
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "darwin-arm64": "server/dist/plugin-darwin-arm64",
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "linux-arm64": "server/dist/plugin-linux-arm64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        },
+        "executable": ""
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "",
+        "footer": "",
+        "settings": [
+            {
+                "key": "SystemConsoleSetting",
+                "display_name": "Configure User Survey:",
+                "type": "custom",
+                "help_text": "",
+                "placeholder": "",
+                "default": null,
+                "hosting": ""
+            }
+        ]
+    }
+}

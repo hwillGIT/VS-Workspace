@@ -1,0 +1,95 @@
+{
+    "id": "mattermost-plugin-newchannelnotify",
+    "name": "New Channel Notify",
+    "description": "Notifies people for newly created channels",
+    "homepage_url": "https://gitlab.com/thepill/mattermost-plugin-newchannelnotify",
+    "support_url": "https://gitlab.com/thepill/mattermost-plugin-newchannelnotify/issues",
+    "release_notes_url": "https://gitlab.com/thepill/mattermost-plugin-newchannelnotify/-/releases",
+    "icon_path": "assets/starter-template-icon.svg",
+    "version": "2.0.0",
+    "min_server_version": "6.4.0",
+    "server": {
+        "executables": {
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "darwin-arm64": "server/dist/plugin-darwin-arm64",
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "linux-arm64": "server/dist/plugin-linux-arm64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        },
+        "executable": ""
+    },
+    "settings_schema": {
+        "header": "",
+        "footer": "",
+        "settings": [
+            {
+                "key": "BotUserName",
+                "display_name": "Bot Name",
+                "type": "text",
+                "help_text": "Must be lowercase. The bot user which is used to post the messages - non existing bots will be created automatically.",
+                "placeholder": "Newchannelbot",
+                "default": null,
+                "hosting": ""
+            },
+            {
+                "key": "ChannelToPost",
+                "display_name": "Channel to Post",
+                "type": "text",
+                "help_text": "The channel where the bot will post to.",
+                "placeholder": "town-square",
+                "default": null,
+                "hosting": ""
+            },
+            {
+                "key": "MessageTemplate",
+                "display_name": "Bot Message Template",
+                "type": "longtext",
+                "help_text": "Set the message template to the announcement. {channel::nameAsLink} -\u003e display the channel name with link. {channel::name} -\u003e display the channel name. {channel::creator} -\u003e display the channel creator's name with mention. {channel::purpose} -\u003e display the purpose of the channel.",
+                "placeholder": "Hello there :wave:. You might want to check out the new channel {channel::nameAsLink} created by {channel::creator}. {channel::name}'s purpose is '{channel::purpose}'",
+                "default": null,
+                "hosting": ""
+            },
+            {
+                "key": "IncludePrivateChannels",
+                "display_name": "Include private channels",
+                "type": "bool",
+                "help_text": "Trigger the bot for new private channels too",
+                "placeholder": "",
+                "default": false,
+                "hosting": ""
+            },
+            {
+                "key": "Mention",
+                "display_name": "Mention",
+                "type": "dropdown",
+                "help_text": "Who gets mentioned.",
+                "placeholder": "",
+                "default": "@channel ",
+                "options": [
+                    {
+                        "display_name": "@channel",
+                        "value": "@channel "
+                    },
+                    {
+                        "display_name": "@here",
+                        "value": "@here "
+                    },
+                    {
+                        "display_name": "None",
+                        "value": " "
+                    }
+                ],
+                "hosting": ""
+            },
+            {
+                "key": "TeamsToWatch",
+                "display_name": "Teams ",
+                "type": "text",
+                "help_text": "Specify which teams should be monitored. Empty =\u003e all teams. Multiple teams can be specified separated by semicolon (;).",
+                "placeholder": "",
+                "default": "",
+                "hosting": ""
+            }
+        ]
+    }
+}

@@ -1,0 +1,145 @@
+{
+    "id": "com.github.manland.mattermost-plugin-gitlab",
+    "name": "GitLab",
+    "description": "GitLab plugin for Mattermost.",
+    "homepage_url": "https://github.com/mattermost/mattermost-plugin-gitlab",
+    "support_url": "https://github.com/mattermost/mattermost-plugin-gitlab/issues",
+    "release_notes_url": "https://github.com/mattermost/mattermost-plugin-gitlabreleases/tag/v1.10.0",
+    "icon_path": "assets/icon.svg",
+    "version": "1.10.0",
+    "min_server_version": "7.1.0",
+    "server": {
+        "executables": {
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "darwin-arm64": "server/dist/plugin-darwin-arm64",
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "linux-arm64": "server/dist/plugin-linux-arm64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        },
+        "executable": ""
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "To set up the GitLab plugin, you need to register a GitLab OAuth app here https://gitlab.com/-/profile/applications.",
+        "footer": "To report an issue, make a suggestion, or submit a contribution, [check the repository](https://github.com/mattermost/mattermost-plugin-gitlab).",
+        "settings": [
+            {
+                "key": "UsePreregisteredApplication",
+                "display_name": "Use Preregistered OAuth Application:",
+                "type": "bool",
+                "help_text": "When true, instructs the plugin to use the preregistered GitLab OAuth application - application registration steps can be skipped. Requires [Chimera Proxy](https://github.com/mattermost/chimera) URL to be configured for the server. Can only be used with official gitlab.com.",
+                "placeholder": "",
+                "default": false,
+                "hosting": "cloud",
+                "secret": false
+            },
+            {
+                "key": "GitlabURL",
+                "display_name": "GitLab URL:",
+                "type": "text",
+                "help_text": "The base URL for using the plugin with a GitLab installation. Examples: https://gitlab.com or https://gitlab.example.com.",
+                "placeholder": "https://gitlab.com",
+                "default": "https://gitlab.com",
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "GitlabOAuthClientID",
+                "display_name": "GitLab OAuth Client ID:",
+                "type": "text",
+                "help_text": "The client ID for the OAuth app registered with GitLab.",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "GitlabOAuthClientSecret",
+                "display_name": "GitLab OAuth Client Secret:",
+                "type": "text",
+                "help_text": "The client secret for the OAuth app registered with GitLab.",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": true
+            },
+            {
+                "key": "WebhookSecret",
+                "display_name": "Webhook Secret:",
+                "type": "generated",
+                "help_text": "The webhook secret set in GitLab.",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": true
+            },
+            {
+                "key": "EncryptionKey",
+                "display_name": "At Rest Encryption Key:",
+                "type": "generated",
+                "help_text": "The AES encryption key used to encrypt stored access tokens.",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": true
+            },
+            {
+                "key": "GitlabGroup",
+                "display_name": "GitLab Group:",
+                "type": "text",
+                "help_text": "(Optional) Set to lock the plugin to a single GitLab group.",
+                "placeholder": "groupName",
+                "default": null,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "EnablePrivateRepo",
+                "display_name": "Enable Private Repositories:",
+                "type": "bool",
+                "help_text": "(Optional) Allow the plugin to work with private repositories for subscriptions.",
+                "placeholder": "",
+                "default": null,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "EnableChildPipelineNotifications",
+                "display_name": "Enable Child Pipelines Notification:",
+                "type": "bool",
+                "help_text": "Allow the plugin to post notfication for child pipelines when the pipeline subscription is created in a channel.",
+                "placeholder": "",
+                "default": true,
+                "hosting": "",
+                "secret": false
+            },
+            {
+                "key": "EnableCodePreview",
+                "display_name": "Enable Code Previews:",
+                "type": "dropdown",
+                "help_text": "Allow the plugin to expand permalinks to GitLab files with an actual preview of the linked file.",
+                "placeholder": "",
+                "default": "public",
+                "options": [
+                    {
+                        "display_name": "Enable for public projects",
+                        "value": "public"
+                    },
+                    {
+                        "display_name": "Enable for public and private projects. This might leak confidential code into public channels",
+                        "value": "privateAndPublic"
+                    },
+                    {
+                        "display_name": "Disable",
+                        "value": "disable"
+                    }
+                ],
+                "hosting": "",
+                "secret": false
+            }
+        ],
+        "sections": null
+    }
+}
