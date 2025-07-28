@@ -12,6 +12,7 @@ This project includes a curated collection of Claude prompts to enhance your dev
 - Read the complete Claude Code guide: `./prompts/claude-code-guide/README.md`
 - Explore community workflows and tools: `./prompts/vincenthopf-claude-code/README.md`
 - Check out MCP tools and servers: `./MCP_TOOLS.md`
+- **IMPORTANT**: Review security practices: `./SECURITY_PRACTICES.md`
 
 ### Claude Code Workflow Shortcuts (from zebbern's guide)
 - **qnew** - Tell Claude to understand all best practices from CLAUDE.md
