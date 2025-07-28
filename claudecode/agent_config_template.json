@@ -1,0 +1,78 @@
+{
+  "description": "Template configuration for parallel agent execution",
+  "max_concurrent_agents": 3,
+  "default_timeout": 300,
+  "tasks": [
+    {
+      "task_id": "code_review_main",
+      "agent_type": "code-reviewer",
+      "description": "Review main trading system code",
+      "prompt": "Please review the main trading system code for quality, security, and performance. Focus on the core trading logic, risk management, and error handling.",
+      "inputs": {
+        "file_path": "trading_system/main.py",
+        "focus_areas": ["security", "performance", "error_handling"]
+      },
+      "priority": 1,
+      "timeout": 180,
+      "retry_count": 2,
+      "dependencies": []
+    },
+    {
+      "task_id": "architecture_analysis",
+      "agent_type": "code-architect",
+      "description": "Analyze overall system architecture",
+      "prompt": "Analyze the trading system architecture. Evaluate the multi-agent design, identify potential bottlenecks, and suggest improvements for scalability and maintainability.",
+      "inputs": {
+        "system_type": "multi-agent trading system",
+        "focus": "scalability and maintainability"
+      },
+      "priority": 2,
+      "timeout": 240,
+      "retry_count": 1,
+      "dependencies": []
+    },
+    {
+      "task_id": "performance_research",
+      "agent_type": "general-purpose",
+      "description": "Research performance optimization techniques",
+      "prompt": "Research the latest performance optimization techniques for Python-based trading systems. Focus on async processing, memory management, and real-time data handling.",
+      "inputs": {
+        "domain": "trading systems",
+        "language": "Python",
+        "focus_areas": ["async processing", "memory management", "real-time data"]
+      },
+      "priority": 3,
+      "timeout": 300,
+      "retry_count": 2,
+      "dependencies": []
+    },
+    {
+      "task_id": "integration_review",
+      "agent_type": "code-reviewer",
+      "description": "Review integration patterns",
+      "prompt": "Review the integration patterns between different agents in the trading system. Evaluate the communication protocols, data flow, and error propagation mechanisms.",
+      "inputs": {
+        "integration_type": "multi-agent communication",
+        "protocols": ["async messaging", "data pipelines"]
+      },
+      "priority": 2,
+      "timeout": 200,
+      "retry_count": 1,
+      "dependencies": ["code_review_main", "architecture_analysis"]
+    },
+    {
+      "task_id": "security_analysis",
+      "agent_type": "general-purpose",
+      "description": "Analyze security considerations",
+      "prompt": "Analyze security considerations for the trading system. Focus on data protection, access controls, audit logging, and compliance requirements.",
+      "inputs": {
+        "security_domains": ["data protection", "access controls", "audit logging", "compliance"],
+        "system_type": "financial trading system"
+      },
+      "priority": 1,
+      "timeout": 250,
+      "retry_count": 2,
+      "dependencies": []
+    }
+  ]
+}

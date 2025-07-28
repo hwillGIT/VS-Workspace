@@ -1,0 +1,474 @@
+{
+  "template_name": "Algorithmic Trading System",
+  "template_version": "1.0",
+  "description": "Comprehensive planning template for algorithmic trading systems",
+  "project_type": "trading_system",
+  "applicable_scenarios": [
+    "high_frequency_trading",
+    "algorithmic_execution",
+    "portfolio_management",
+    "market_making",
+    "options_trading",
+    "multi_asset_trading"
+  ],
+  "planning_configuration": {
+    "max_concurrent_agents": 6,
+    "default_timeout": 600,
+    "synthesis_strategy": "trading_system_optimized",
+    "conflict_resolution": "compliance_first_risk_second"
+  },
+  "perspectives": [
+    {
+      "perspective_id": "trading_logic",
+      "name": "Trading Logic & Strategy",
+      "agent_type": "general-purpose",
+      "focus_areas": [
+        "trading_algorithms",
+        "strategy_implementation", 
+        "signal_processing",
+        "order_management",
+        "execution_algorithms",
+        "strategy_parameters"
+      ],
+      "priority": 1,
+      "timeout": 600,
+      "constraints": {
+        "latency_critical": true,
+        "accuracy_required": true,
+        "backtesting_required": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a senior quantitative developer specializing in trading algorithm design and implementation.",
+        "focus_instruction": "Design comprehensive trading logic that balances performance, risk management, and regulatory compliance.",
+        "specific_areas": [
+          "Core trading algorithm architecture",
+          "Signal generation and processing workflows", 
+          "Order management and execution logic",
+          "Strategy parameter management",
+          "Performance measurement and attribution",
+          "Backtesting and validation framework"
+        ],
+        "output_requirements": [
+          "Detailed algorithm specifications",
+          "Signal processing architecture",
+          "Order management workflow",
+          "Strategy configuration framework",
+          "Performance measurement criteria",
+          "Backtesting methodology"
+        ]
+      }
+    },
+    {
+      "perspective_id": "risk_management",
+      "name": "Risk Management & Controls",
+      "agent_type": "code-reviewer", 
+      "focus_areas": [
+        "position_limits",
+        "risk_calculations",
+        "real_time_monitoring",
+        "stress_testing",
+        "var_calculations",
+        "regulatory_risk_controls"
+      ],
+      "priority": 1,
+      "timeout": 600,
+      "constraints": {
+        "real_time_required": true,
+        "regulatory_compliance": true,
+        "audit_trail_required": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a risk management expert specializing in algorithmic trading risk controls.",
+        "focus_instruction": "Design comprehensive risk management framework that provides real-time protection while enabling trading performance.",
+        "specific_areas": [
+          "Pre-trade and post-trade risk controls",
+          "Position and exposure limit framework",
+          "Real-time risk monitoring and alerting",
+          "Stress testing and scenario analysis",
+          "Model risk management",
+          "Regulatory risk reporting"
+        ],
+        "output_requirements": [
+          "Risk control architecture",
+          "Position limit specifications",
+          "Real-time monitoring system design",
+          "Stress testing framework",
+          "Risk reporting requirements",
+          "Control validation procedures"
+        ]
+      }
+    },
+    {
+      "perspective_id": "performance_latency",
+      "name": "Performance & Latency Optimization",
+      "agent_type": "code-architect",
+      "focus_areas": [
+        "ultra_low_latency",
+        "high_throughput", 
+        "real_time_processing",
+        "hardware_acceleration",
+        "network_optimization",
+        "memory_management"
+      ],
+      "priority": 1,
+      "timeout": 600,
+      "constraints": {
+        "latency_budget_critical": true,
+        "throughput_requirements": true,
+        "hardware_optimization": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a high-performance systems architect specializing in ultra-low latency trading systems.", 
+        "focus_instruction": "Design architecture that achieves maximum performance while maintaining reliability and accuracy.",
+        "specific_areas": [
+          "Low-latency architecture design",
+          "High-performance data structures",
+          "Real-time processing optimization",
+          "Hardware acceleration strategies",
+          "Network and I/O optimization",
+          "Performance monitoring and tuning"
+        ],
+        "output_requirements": [
+          "Low-latency architecture specification",
+          "Performance optimization strategy",
+          "Hardware requirements and recommendations",
+          "Network optimization plan", 
+          "Performance monitoring framework",
+          "Latency budget allocation"
+        ]
+      }
+    },
+    {
+      "perspective_id": "market_data",
+      "name": "Market Data Management",
+      "agent_type": "code-architect",
+      "focus_areas": [
+        "data_feed_integration",
+        "data_normalization",
+        "historical_data_management",
+        "reference_data",
+        "data_quality",
+        "data_distribution"
+      ],
+      "priority": 1,
+      "timeout": 600,
+      "constraints": {
+        "data_quality_critical": true,
+        "low_latency_required": true,
+        "high_availability": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a market data systems architect with expertise in real-time financial data processing.",
+        "focus_instruction": "Design robust market data infrastructure that delivers high-quality, low-latency data to trading systems.",
+        "specific_areas": [
+          "Market data feed integration architecture",
+          "Real-time data normalization and enrichment",
+          "Historical data storage and retrieval",
+          "Reference data management",
+          "Data quality monitoring and validation",
+          "Data distribution and caching strategies"
+        ],
+        "output_requirements": [
+          "Data architecture specification",
+          "Feed integration framework",
+          "Data quality assurance plan",
+          "Historical data strategy",
+          "Reference data management system",
+          "Data distribution architecture"
+        ]
+      }
+    },
+    {
+      "perspective_id": "regulatory_compliance",
+      "name": "Regulatory Compliance & Reporting",
+      "agent_type": "code-reviewer",
+      "focus_areas": [
+        "regulatory_requirements",
+        "audit_trails",
+        "transaction_reporting",
+        "best_execution",
+        "compliance_monitoring",
+        "regulatory_change_management"
+      ],
+      "priority": 1,
+      "timeout": 600,
+      "constraints": {
+        "regulatory_compliance_mandatory": true,
+        "audit_trail_complete": true,
+        "reporting_accuracy": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a financial regulatory compliance expert specializing in algorithmic trading regulations.",
+        "focus_instruction": "Design comprehensive compliance framework that ensures full regulatory adherence while supporting business objectives.",
+        "specific_areas": [
+          "Regulatory requirement analysis and mapping",
+          "Comprehensive audit trail implementation", 
+          "Transaction and trade reporting systems",
+          "Best execution monitoring and reporting",
+          "Real-time compliance monitoring",
+          "Regulatory change management processes"
+        ],
+        "output_requirements": [
+          "Compliance framework design",
+          "Audit trail specification",
+          "Regulatory reporting system architecture",
+          "Best execution implementation plan",
+          "Compliance monitoring framework",
+          "Regulatory change management procedures"
+        ]
+      }
+    },
+    {
+      "perspective_id": "infrastructure_operations",
+      "name": "Infrastructure & Operations",
+      "agent_type": "code-architect",
+      "focus_areas": [
+        "high_availability",
+        "disaster_recovery",
+        "system_monitoring",
+        "deployment_automation",
+        "capacity_planning",
+        "operational_procedures"
+      ],
+      "priority": 2,
+      "timeout": 500,
+      "constraints": {
+        "high_availability_required": true,
+        "disaster_recovery_mandatory": true,
+        "operational_excellence": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are an infrastructure architect specializing in mission-critical trading system operations.",
+        "focus_instruction": "Design robust infrastructure that ensures maximum uptime, fast recovery, and operational excellence.",
+        "specific_areas": [
+          "High availability architecture design",
+          "Disaster recovery and business continuity",
+          "Comprehensive monitoring and alerting",
+          "Automated deployment and configuration",
+          "Capacity planning and scaling strategies",
+          "Operational runbooks and procedures"
+        ],
+        "output_requirements": [
+          "Infrastructure architecture specification",
+          "High availability design",
+          "Disaster recovery plan",
+          "Monitoring and alerting framework",
+          "Deployment automation strategy",
+          "Operational procedures and runbooks"
+        ]
+      }
+    }
+  ],
+  "synthesis_configuration": {
+    "synthesis_strategy": "trading_system_optimized",
+    "conflict_resolution_rules": [
+      {
+        "rule": "regulatory_compliance_priority",
+        "description": "Regulatory compliance requirements always take precedence"
+      },
+      {
+        "rule": "risk_management_priority", 
+        "description": "Risk management controls are second priority"
+      },
+      {
+        "rule": "performance_optimization",
+        "description": "Performance optimizations within risk and compliance constraints"
+      },
+      {
+        "rule": "operational_excellence",
+        "description": "Operational procedures support business continuity"
+      }
+    ],
+    "integration_requirements": [
+      "end_to_end_latency_optimization",
+      "consistent_risk_controls",
+      "unified_data_model",
+      "comprehensive_monitoring",
+      "seamless_operations"
+    ]
+  },
+  "validation_criteria": [
+    {
+      "category": "technical",
+      "criteria": [
+        "latency_budget_compliance",
+        "throughput_capacity_verification",
+        "data_consistency_validation",
+        "error_handling_completeness",
+        "testing_strategy_comprehensiveness"
+      ]
+    },
+    {
+      "category": "risk_management",
+      "criteria": [
+        "risk_control_implementation",
+        "position_limit_appropriateness",
+        "stress_testing_coverage",
+        "model_validation_framework",
+        "monitoring_completeness"
+      ]
+    },
+    {
+      "category": "regulatory_compliance",
+      "criteria": [
+        "regulatory_requirement_coverage",
+        "control_implementation_adequacy",
+        "audit_trail_completeness",
+        "reporting_system_accuracy",
+        "change_management_procedures"
+      ]
+    },
+    {
+      "category": "operational",
+      "criteria": [
+        "high_availability_design",
+        "disaster_recovery_capability",
+        "monitoring_system_coverage",
+        "deployment_procedure_safety",
+        "incident_response_readiness"
+      ]
+    }
+  ],
+  "context_template": {
+    "project_type": "trading_system",
+    "system_category": "algorithmic_trading",
+    "problem_description": "[TO BE FILLED: Detailed description of the trading system to be built]",
+    "requirements": {
+      "functional": {
+        "trading_strategies": "[TO BE FILLED: List of trading strategies to implement]",
+        "asset_classes": "[TO BE FILLED: Asset classes to support]",
+        "market_venues": "[TO BE FILLED: Trading venues and exchanges]",
+        "execution_types": "[TO BE FILLED: Types of order execution required]",
+        "reporting_requirements": "[TO BE FILLED: Required reports and analytics]"
+      },
+      "non_functional": {
+        "latency_requirements": "[TO BE FILLED: Maximum acceptable latency]",
+        "throughput_requirements": "[TO BE FILLED: Required message/transaction throughput]",
+        "availability_requirements": "[TO BE FILLED: Uptime requirements]",
+        "data_retention_requirements": "[TO BE FILLED: Data retention policies]",
+        "regulatory_requirements": "[TO BE FILLED: Applicable regulations]"
+      },
+      "business": {
+        "target_markets": "[TO BE FILLED: Target geographic and financial markets]",
+        "user_types": "[TO BE FILLED: Types of users (traders, risk managers, etc.)]",
+        "integration_requirements": "[TO BE FILLED: Required system integrations]",
+        "compliance_requirements": "[TO BE FILLED: Compliance and audit requirements]"
+      }
+    },
+    "constraints": {
+      "technical": {
+        "latency_limits": "[TO BE FILLED: Hard latency constraints]",
+        "technology_constraints": "[TO BE FILLED: Technology stack limitations]",
+        "integration_constraints": "[TO BE FILLED: Integration limitations]"
+      },
+      "regulatory": {
+        "jurisdictions": "[TO BE FILLED: Regulatory jurisdictions]",
+        "regulations": "[TO BE FILLED: Specific regulations to comply with]",
+        "reporting_requirements": "[TO BE FILLED: Regulatory reporting obligations]"
+      },
+      "business": {
+        "budget_constraints": "[TO BE FILLED: Budget limitations]",
+        "timeline_constraints": "[TO BE FILLED: Delivery timeline requirements]",
+        "resource_constraints": "[TO BE FILLED: Team and resource limitations]"
+      }
+    },
+    "market_context": {
+      "asset_classes": "[TO BE FILLED: Equities, Fixed Income, Derivatives, etc.]",
+      "trading_venues": "[TO BE FILLED: Exchanges and ECNs]",
+      "market_hours": "[TO BE FILLED: Trading hours and timezone considerations]",
+      "data_providers": "[TO BE FILLED: Market data vendors]"
+    },
+    "stakeholders": [
+      "traders",
+      "portfolio_managers",
+      "risk_managers", 
+      "compliance_officers",
+      "it_operations",
+      "business_stakeholders"
+    ],
+    "success_criteria": [
+      "[TO BE FILLED: Specific success metrics]"
+    ]
+  },
+  "output_templates": {
+    "executive_summary": {
+      "sections": [
+        "project_overview",
+        "key_architectural_decisions",
+        "risk_management_approach",
+        "compliance_framework",
+        "implementation_timeline",
+        "resource_requirements",
+        "success_metrics"
+      ]
+    },
+    "technical_specification": {
+      "sections": [
+        "system_architecture",
+        "technology_stack",
+        "performance_specifications",
+        "integration_requirements",
+        "testing_strategy",
+        "deployment_plan"
+      ]
+    },
+    "implementation_roadmap": {
+      "phases": [
+        "foundation_infrastructure",
+        "core_trading_engine",
+        "risk_management_integration",
+        "market_data_integration",
+        "compliance_implementation",
+        "testing_and_validation",
+        "production_deployment"
+      ]
+    }
+  },
+  "usage_examples": [
+    {
+      "scenario": "High-Frequency Trading Platform",
+      "key_requirements": [
+        "Sub-microsecond latency",
+        "Co-location optimization",
+        "Hardware acceleration",
+        "Ultra-fast risk checks"
+      ],
+      "critical_perspectives": [
+        "performance_latency",
+        "trading_logic",
+        "risk_management",
+        "market_data"
+      ]
+    },
+    {
+      "scenario": "Multi-Asset Portfolio Management",
+      "key_requirements": [
+        "Cross-asset risk aggregation",
+        "Regulatory reporting",
+        "Performance attribution",
+        "Client reporting"
+      ],
+      "critical_perspectives": [
+        "trading_logic",
+        "risk_management",
+        "regulatory_compliance",
+        "infrastructure_operations"
+      ]
+    },
+    {
+      "scenario": "Options Market Making",
+      "key_requirements": [
+        "Real-time Greeks calculation",
+        "Volatility surface management",
+        "Delta hedging automation",
+        "Risk limit monitoring"
+      ],
+      "critical_perspectives": [
+        "trading_logic",
+        "risk_management",
+        "performance_latency",
+        "market_data"
+      ]
+    }
+  ]
+}

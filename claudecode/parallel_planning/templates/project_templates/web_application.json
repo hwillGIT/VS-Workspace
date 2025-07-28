@@ -1,0 +1,442 @@
+{
+  "template_name": "Web Application Development",
+  "template_version": "1.0",
+  "description": "Comprehensive planning template for web application projects",
+  "project_type": "web_application",
+  "applicable_scenarios": [
+    "full_stack_web_app",
+    "spa_application",
+    "progressive_web_app",
+    "e_commerce_platform",
+    "content_management_system",
+    "enterprise_web_application"
+  ],
+  "planning_configuration": {
+    "max_concurrent_agents": 5,
+    "default_timeout": 450,
+    "synthesis_strategy": "user_centric_balanced",
+    "conflict_resolution": "user_experience_first"
+  },
+  "perspectives": [
+    {
+      "perspective_id": "frontend_architecture",
+      "name": "Frontend Architecture & UX",
+      "agent_type": "code-architect",
+      "focus_areas": [
+        "user_interface_design",
+        "frontend_framework_selection",
+        "responsive_design",
+        "accessibility_compliance",
+        "performance_optimization",
+        "state_management"
+      ],
+      "priority": 1,
+      "timeout": 450,
+      "constraints": {
+        "user_experience_critical": true,
+        "accessibility_required": true,
+        "performance_standards": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a frontend architect and UX specialist with expertise in modern web development.",
+        "focus_instruction": "Design a user-centric frontend architecture that delivers exceptional user experience while maintaining technical excellence.",
+        "specific_areas": [
+          "User interface and user experience design principles",
+          "Frontend framework and technology selection",
+          "Responsive design and mobile optimization",
+          "Accessibility compliance (WCAG guidelines)",
+          "Frontend performance optimization strategies",
+          "State management and data flow architecture"
+        ],
+        "output_requirements": [
+          "Frontend architecture specification",
+          "Technology stack recommendations",
+          "UI/UX design framework",
+          "Accessibility implementation plan",
+          "Performance optimization strategy",
+          "Component library design"
+        ]
+      }
+    },
+    {
+      "perspective_id": "backend_architecture",
+      "name": "Backend Architecture & APIs",
+      "agent_type": "code-architect",
+      "focus_areas": [
+        "backend_framework_selection",
+        "api_design",
+        "database_architecture",
+        "microservices_vs_monolith",
+        "scalability_planning",
+        "integration_patterns"
+      ],
+      "priority": 1,
+      "timeout": 450,
+      "constraints": {
+        "scalability_required": true,
+        "api_design_standards": true,
+        "data_consistency": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a backend systems architect with expertise in scalable web application backends.",
+        "focus_instruction": "Design robust backend architecture that supports scalability, maintainability, and integration requirements.",
+        "specific_areas": [
+          "Backend framework and technology selection",
+          "RESTful API design and GraphQL considerations",
+          "Database design and data modeling",
+          "Microservices vs monolithic architecture decisions",
+          "Scalability and performance planning",
+          "Third-party service integration patterns"
+        ],
+        "output_requirements": [
+          "Backend architecture specification",
+          "API design standards and documentation",
+          "Database schema and data model",
+          "Service architecture design",
+          "Integration framework",
+          "Scalability implementation plan"
+        ]
+      }
+    },
+    {
+      "perspective_id": "security_privacy",
+      "name": "Security & Privacy",
+      "agent_type": "code-reviewer",
+      "focus_areas": [
+        "authentication_authorization",
+        "data_protection",
+        "input_validation",
+        "security_headers",
+        "privacy_compliance",
+        "vulnerability_assessment"
+      ],
+      "priority": 1,
+      "timeout": 450,
+      "constraints": {
+        "security_mandatory": true,
+        "privacy_compliance": true,
+        "vulnerability_protection": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a web application security expert specializing in comprehensive security and privacy protection.",
+        "focus_instruction": "Design security framework that protects against common web vulnerabilities while ensuring privacy compliance.",
+        "specific_areas": [
+          "Authentication and authorization systems",
+          "Data protection and encryption strategies",
+          "Input validation and sanitization",
+          "Security headers and CSP implementation",
+          "Privacy regulation compliance (GDPR, CCPA)",
+          "Security testing and vulnerability assessment"
+        ],
+        "output_requirements": [
+          "Security architecture design",
+          "Authentication and authorization plan",
+          "Data protection strategy",
+          "Security testing framework",
+          "Privacy compliance implementation",
+          "Incident response procedures"
+        ]
+      }
+    },
+    {
+      "perspective_id": "performance_optimization",
+      "name": "Performance & Scalability",
+      "agent_type": "general-purpose",
+      "focus_areas": [
+        "frontend_performance",
+        "backend_optimization",
+        "caching_strategies",
+        "cdn_implementation",
+        "database_optimization",
+        "monitoring_analytics"
+      ],
+      "priority": 2,
+      "timeout": 400,
+      "constraints": {
+        "performance_targets": true,
+        "scalability_planning": true,
+        "monitoring_required": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a web performance specialist focused on delivering fast, scalable web applications.",
+        "focus_instruction": "Design comprehensive performance optimization strategy covering frontend, backend, and infrastructure concerns.",
+        "specific_areas": [
+          "Frontend performance optimization (loading, rendering, interaction)",
+          "Backend performance tuning and optimization",
+          "Caching strategies (browser, CDN, application, database)",
+          "Content delivery network implementation",
+          "Database query optimization and indexing",
+          "Performance monitoring and analytics implementation"
+        ],
+        "output_requirements": [
+          "Performance optimization strategy",
+          "Caching implementation plan",
+          "CDN strategy and configuration",
+          "Database optimization guidelines",
+          "Performance monitoring framework",
+          "Scalability planning and testing"
+        ]
+      }
+    },
+    {
+      "perspective_id": "devops_deployment",
+      "name": "DevOps & Deployment",
+      "agent_type": "code-architect",
+      "focus_areas": [
+        "ci_cd_pipeline",
+        "containerization",
+        "cloud_infrastructure",
+        "monitoring_logging",
+        "backup_recovery",
+        "environment_management"
+      ],
+      "priority": 2,
+      "timeout": 400,
+      "constraints": {
+        "automation_required": true,
+        "reliability_standards": true,
+        "monitoring_comprehensive": true
+      },
+      "prompt_template": {
+        "base_instruction": "You are a DevOps engineer specializing in modern web application deployment and operations.",
+        "focus_instruction": "Design automated, reliable deployment and operations framework for web applications.",
+        "specific_areas": [
+          "CI/CD pipeline design and implementation",
+          "Containerization strategy (Docker, Kubernetes)",
+          "Cloud infrastructure planning and management",
+          "Comprehensive monitoring and logging systems",
+          "Backup and disaster recovery procedures",
+          "Environment management and configuration"
+        ],
+        "output_requirements": [
+          "CI/CD pipeline specification",
+          "Infrastructure as code implementation",
+          "Containerization and orchestration plan",
+          "Monitoring and alerting framework",
+          "Backup and recovery procedures",
+          "Environment management strategy"
+        ]
+      }
+    }
+  ],
+  "synthesis_configuration": {
+    "synthesis_strategy": "user_centric_balanced",
+    "conflict_resolution_rules": [
+      {
+        "rule": "user_experience_priority",
+        "description": "User experience considerations take precedence in design decisions"
+      },
+      {
+        "rule": "security_non_negotiable",
+        "description": "Security requirements are non-negotiable and must be implemented"
+      },
+      {
+        "rule": "performance_within_budget",
+        "description": "Performance optimizations within resource and timeline constraints"
+      },
+      {
+        "rule": "maintainability_focus",
+        "description": "Solutions should prioritize long-term maintainability"
+      }
+    ],
+    "integration_requirements": [
+      "seamless_user_experience",
+      "consistent_security_model",
+      "unified_monitoring_strategy",
+      "integrated_deployment_pipeline",
+      "comprehensive_testing_approach"
+    ]
+  },
+  "validation_criteria": [
+    {
+      "category": "user_experience",
+      "criteria": [
+        "usability_standards_compliance",
+        "accessibility_wcag_compliance",
+        "responsive_design_verification",
+        "performance_benchmarks_met",
+        "user_journey_optimization"
+      ]
+    },
+    {
+      "category": "technical_architecture",
+      "criteria": [
+        "architecture_consistency",
+        "scalability_design_validation",
+        "integration_point_verification",
+        "technology_stack_coherence",
+        "code_quality_standards"
+      ]
+    },
+    {
+      "category": "security_privacy",
+      "criteria": [
+        "security_vulnerability_assessment",
+        "authentication_authorization_verification",
+        "data_protection_compliance",
+        "privacy_regulation_adherence",
+        "security_testing_coverage"
+      ]
+    },
+    {
+      "category": "operational_readiness",
+      "criteria": [
+        "deployment_automation_validation",
+        "monitoring_system_coverage",
+        "backup_recovery_testing",
+        "environment_management_verification",
+        "incident_response_preparedness"
+      ]
+    }
+  ],
+  "context_template": {
+    "project_type": "web_application",
+    "application_category": "full_stack_web_app",
+    "problem_description": "[TO BE FILLED: Detailed description of the web application to be built]",
+    "requirements": {
+      "functional": {
+        "core_features": "[TO BE FILLED: Primary application features]",
+        "user_roles": "[TO BE FILLED: Different types of users and their capabilities]",
+        "integrations": "[TO BE FILLED: Required third-party integrations]",
+        "content_management": "[TO BE FILLED: Content creation and management needs]",
+        "reporting_analytics": "[TO BE FILLED: Required reports and analytics]"
+      },
+      "non_functional": {
+        "performance_requirements": "[TO BE FILLED: Page load times, response times]",
+        "scalability_requirements": "[TO BE FILLED: Expected user load and growth]",
+        "availability_requirements": "[TO BE FILLED: Uptime expectations]",
+        "security_requirements": "[TO BE FILLED: Security standards and compliance]",
+        "accessibility_requirements": "[TO BE FILLED: Accessibility standards compliance]"
+      },
+      "technical": {
+        "browser_support": "[TO BE FILLED: Supported browsers and versions]",
+        "mobile_requirements": "[TO BE FILLED: Mobile and responsive design needs]",
+        "offline_capabilities": "[TO BE FILLED: Offline functionality requirements]",
+        "real_time_features": "[TO BE FILLED: Real-time communication needs]",
+        "seo_requirements": "[TO BE FILLED: Search engine optimization needs]"
+      }
+    },
+    "constraints": {
+      "technical": {
+        "technology_preferences": "[TO BE FILLED: Preferred or required technologies]",
+        "legacy_system_integration": "[TO BE FILLED: Existing system integration needs]",
+        "infrastructure_limitations": "[TO BE FILLED: Infrastructure constraints]"
+      },
+      "business": {
+        "budget_constraints": "[TO BE FILLED: Budget limitations]",
+        "timeline_constraints": "[TO BE FILLED: Launch date requirements]",
+        "resource_constraints": "[TO BE FILLED: Team size and skill limitations]"
+      },
+      "regulatory": {
+        "compliance_requirements": "[TO BE FILLED: Industry regulations]",
+        "data_protection_laws": "[TO BE FILLED: Privacy law compliance needs]",
+        "accessibility_standards": "[TO BE FILLED: Required accessibility compliance]"
+      }
+    },
+    "target_audience": {
+      "primary_users": "[TO BE FILLED: Main user demographics]",
+      "user_experience_level": "[TO BE FILLED: Technical sophistication of users]",
+      "device_usage_patterns": "[TO BE FILLED: Primary devices and usage contexts]",
+      "geographic_distribution": "[TO BE FILLED: User geographic locations]"
+    },
+    "stakeholders": [
+      "product_owners",
+      "end_users",
+      "development_team",
+      "business_stakeholders",
+      "it_operations",
+      "compliance_officers"
+    ],
+    "success_criteria": [
+      "[TO BE FILLED: Specific success metrics and KPIs]"
+    ]
+  },
+  "output_templates": {
+    "executive_summary": {
+      "sections": [
+        "project_overview",
+        "key_architectural_decisions",
+        "user_experience_approach",
+        "technology_stack_rationale",
+        "security_and_privacy_framework",
+        "implementation_timeline",
+        "resource_requirements",
+        "success_metrics"
+      ]
+    },
+    "technical_specification": {
+      "sections": [
+        "system_architecture",
+        "frontend_design_system",
+        "backend_api_specification",
+        "database_design",
+        "security_implementation",
+        "performance_optimization_plan",
+        "testing_strategy",
+        "deployment_architecture"
+      ]
+    },
+    "implementation_roadmap": {
+      "phases": [
+        "project_setup_and_foundation",
+        "core_backend_development",
+        "frontend_framework_implementation",
+        "user_interface_development",
+        "integration_and_testing",
+        "security_hardening",
+        "performance_optimization",
+        "deployment_and_launch"
+      ]
+    }
+  },
+  "usage_examples": [
+    {
+      "scenario": "E-commerce Platform",
+      "key_requirements": [
+        "Product catalog management",
+        "Shopping cart and checkout",
+        "Payment processing integration",
+        "User account management",
+        "Order tracking and history"
+      ],
+      "critical_perspectives": [
+        "frontend_architecture",
+        "backend_architecture", 
+        "security_privacy",
+        "performance_optimization"
+      ]
+    },
+    {
+      "scenario": "Content Management System",
+      "key_requirements": [
+        "Content creation and editing",
+        "Multi-user collaboration",
+        "Content publishing workflow",
+        "SEO optimization",
+        "Media management"
+      ],
+      "critical_perspectives": [
+        "frontend_architecture",
+        "backend_architecture",
+        "security_privacy",
+        "devops_deployment"
+      ]
+    },
+    {
+      "scenario": "Progressive Web App",
+      "key_requirements": [
+        "Offline functionality",
+        "Push notifications",
+        "App-like experience",
+        "Cross-platform compatibility",
+        "Performance optimization"
+      ],
+      "critical_perspectives": [
+        "frontend_architecture",
+        "performance_optimization",
+        "devops_deployment",
+        "security_privacy"
+      ]
+    }
+  ]
+}
