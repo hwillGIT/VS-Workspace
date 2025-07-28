@@ -1,0 +1,3 @@
+[submodule "ClaudeCode/awesome-claude-prompts"]
+	path = ClaudeCode/awesome-claude-prompts
+	url = https://github.com/langgptai/awesome-claude-prompts.git
