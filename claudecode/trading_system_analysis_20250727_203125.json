@@ -1,0 +1,365 @@
+{
+  "session_id": "analysis_20250727_203125",
+  "timestamp": "2025-07-27T20:31:25.338305",
+  "project_path": "trading_system",
+  "analysis_scope": "comprehensive",
+  "raw_results": {
+    "architecture_diagram": {
+      "components": [
+        {
+          "name": "main",
+          "type": "module",
+          "file_path": "main.py",
+          "size": 20301
+        },
+        {
+          "name": "setup",
+          "type": "module",
+          "file_path": "setup.py",
+          "size": 2253
+        },
+        {
+          "name": "data_universe_agent",
+          "type": "agent",
+          "file_path": "agents\\data_universe\\data_universe_agent.py",
+          "size": 21272
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\data_universe\\__init__.py",
+          "size": 120
+        },
+        {
+          "name": "technical_analysis_agent",
+          "type": "agent",
+          "file_path": "agents\\feature_engineering\\technical_analysis_agent.py",
+          "size": 25506
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\feature_engineering\\__init__.py",
+          "size": 162
+        },
+        {
+          "name": "ml_ensemble_agent",
+          "type": "agent",
+          "file_path": "agents\\ml_ensemble\\ml_ensemble_agent.py",
+          "size": 36485
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\ml_ensemble\\__init__.py",
+          "size": 120
+        },
+        {
+          "name": "recommendation_agent",
+          "type": "agent",
+          "file_path": "agents\\output\\recommendation_agent.py",
+          "size": 64423
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\output\\__init__.py",
+          "size": 118
+        },
+        {
+          "name": "risk_modeling_agent",
+          "type": "agent",
+          "file_path": "agents\\risk_management\\risk_modeling_agent.py",
+          "size": 52548
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\risk_management\\__init__.py",
+          "size": 122
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\strategies\\__init__.py",
+          "size": 171
+        },
+        {
+          "name": "cross_asset_agent",
+          "type": "agent",
+          "file_path": "agents\\strategies\\cross_asset\\cross_asset_agent.py",
+          "size": 50425
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\strategies\\cross_asset\\__init__.py",
+          "size": 115
+        },
+        {
+          "name": "event_driven_agent",
+          "type": "agent",
+          "file_path": "agents\\strategies\\event_driven\\event_driven_agent.py",
+          "size": 34127
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\strategies\\event_driven\\__init__.py",
+          "size": 119
+        },
+        {
+          "name": "momentum_agent",
+          "type": "agent",
+          "file_path": "agents\\strategies\\momentum\\momentum_agent.py",
+          "size": 31458
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\strategies\\momentum\\__init__.py",
+          "size": 111
+        },
+        {
+          "name": "options_agent",
+          "type": "agent",
+          "file_path": "agents\\strategies\\options\\options_agent.py",
+          "size": 58161
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\strategies\\options\\__init__.py",
+          "size": 101
+        },
+        {
+          "name": "stat_arb_agent",
+          "type": "agent",
+          "file_path": "agents\\strategies\\stat_arb\\stat_arb_agent.py",
+          "size": 39878
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\strategies\\stat_arb\\__init__.py",
+          "size": 142
+        },
+        {
+          "name": "signal_synthesis_agent",
+          "type": "agent",
+          "file_path": "agents\\synthesis\\signal_synthesis_agent.py",
+          "size": 34741
+        },
+        {
+          "name": "__init__",
+          "type": "agent",
+          "file_path": "agents\\synthesis\\__init__.py",
+          "size": 146
+        }
+      ],
+      "relationships": [
+        {
+          "source": "main",
+          "target": "trading_engine",
+          "type": "uses"
+        },
+        {
+          "source": "trading_engine",
+          "target": "order_manager",
+          "type": "depends_on"
+        },
+        {
+          "source": "order_manager",
+          "target": "risk_manager",
+          "type": "validates_with"
+        }
+      ],
+      "diagrams_generated": [
+        "component_diagram.svg",
+        "dependency_diagram.svg"
+      ],
+      "analysis_time": 8.5
+    },
+    "dependency_analysis": {
+      "dependency_graph": {
+        "nodes": 25,
+        "edges": 32
+      },
+      "circular_dependencies": [
+        {
+          "nodes": [
+            "main",
+            "database",
+            "main"
+          ],
+          "severity": "medium"
+        },
+        {
+          "nodes": [
+            "trading_engine",
+            "order_manager",
+            "trading_engine"
+          ],
+          "severity": "high"
+        }
+      ],
+      "metrics": {
+        "coupling_index": 4.2,
+        "stability_index": 0.68,
+        "total_dependencies": 45
+      },
+      "analysis_time": 5.8
+    },
+    "code_metrics": {
+      "project_metrics": {
+        "total_files": 78,
+        "total_loc": 38438,
+        "overall_complexity": 8.7,
+        "overall_maintainability": 72.3,
+        "overall_coverage": 22.5,
+        "quality_gate_status": "warning"
+      },
+      "alerts": [
+        {
+          "type": "warning",
+          "message": "15 files exceed complexity threshold"
+        },
+        {
+          "type": "warning",
+          "message": "45 files have low test coverage"
+        },
+        {
+          "type": "info",
+          "message": "Overall maintainability index: 72.3"
+        }
+      ],
+      "analysis_time": 12.3
+    },
+    "security_audit": {
+      "vulnerabilities": [
+        {
+          "type": "hardcoded_secret",
+          "severity": "critical",
+          "description": "Hardcoded API key found in test files",
+          "file_path": "agents/system_architect/tests/simple_integration_test.py",
+          "recommendation": "Use environment variables for secrets"
+        },
+        {
+          "type": "weak_cryptography",
+          "severity": "high",
+          "description": "MD5 hashing algorithm detected",
+          "file_path": "agents/system_architect/tests/simple_integration_test.py",
+          "recommendation": "Replace with SHA-256 or stronger"
+        },
+        {
+          "type": "sql_injection",
+          "severity": "high",
+          "description": "Potential SQL injection vulnerability",
+          "file_path": "agents/system_architect/tests/test_manual_integration.py",
+          "recommendation": "Use parameterized queries"
+        }
+      ],
+      "security_score": 65.0,
+      "risk_level": "medium",
+      "analysis_time": 7.2
+    },
+    "migration_planning": {
+      "migration_plan": {
+        "steps": [
+          {
+            "name": "Environment Backup",
+            "hours": 2.0,
+            "risk": "low"
+          },
+          {
+            "name": "Dependency Analysis",
+            "hours": 4.0,
+            "risk": "medium"
+          },
+          {
+            "name": "Python Version Upgrade",
+            "hours": 8.0,
+            "risk": "high"
+          },
+          {
+            "name": "Library Updates",
+            "hours": 12.0,
+            "risk": "high"
+          },
+          {
+            "name": "Testing and Validation",
+            "hours": 8.0,
+            "risk": "low"
+          }
+        ],
+        "total_hours": 34.0,
+        "estimated_duration": "2-3 weeks"
+      },
+      "risks": [
+        {
+          "severity": "high",
+          "description": "Breaking changes in asyncio library"
+        },
+        {
+          "severity": "medium",
+          "description": "Deprecated features in trading libraries"
+        }
+      ],
+      "analysis_time": 9.5
+    }
+  },
+  "health_report": {
+    "overall_score": 71.9,
+    "health_status": "Fair",
+    "component_scores": {
+      "complexity": 68.0,
+      "security": 65.0,
+      "dependency": 70.0,
+      "maintainability": 72.3,
+      "test_coverage": 90.0
+    },
+    "insights": [
+      {
+        "category": "security",
+        "severity": "critical",
+        "title": "Critical Security Vulnerabilities",
+        "description": "Multiple critical security issues require immediate attention",
+        "recommendations": [
+          "Fix hardcoded secrets immediately",
+          "Replace weak cryptographic algorithms",
+          "Implement proper input validation"
+        ]
+      }
+    ],
+    "next_steps": [
+      {
+        "priority": "critical",
+        "title": "Security Remediation",
+        "timeline": "1 week",
+        "description": "Fix critical security vulnerabilities"
+      },
+      {
+        "priority": "high",
+        "title": "Test Coverage Improvement",
+        "timeline": "2-3 weeks",
+        "description": "Increase test coverage from 22% to 80%"
+      },
+      {
+        "priority": "medium",
+        "title": "Architecture Optimization",
+        "timeline": "1 month",
+        "description": "Address circular dependencies and complexity"
+      }
+    ]
+  },
+  "metadata": {
+    "total_execution_time": 43.300000000000004,
+    "agents_used": [
+      "architecture_diagram",
+      "dependency_analysis",
+      "code_metrics",
+      "security_audit",
+      "migration_planning"
+    ]
+  }
+}
