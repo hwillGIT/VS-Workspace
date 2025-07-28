@@ -1,1 +1,0 @@
-READ README.md, THEN run eza . --git-ignore --tree to understand the context of the project.

@@ -64,72 +64,150 @@ class TradingSystem:
         Returns:
             Complete analysis results
         """
-        if asset_classes is None:
-            asset_classes = ["equities", "etfs"]
-        if exchanges is None:
-            exchanges = ["NYSE", "NASDAQ"]
-        if custom_symbols is None:
-            custom_symbols = []
-            
+        # Set default parameters
+        asset_classes = asset_classes or ["equities", "etfs"]
+        exchanges = exchanges or ["NYSE", "NASDAQ"]
+        custom_symbols = custom_symbols or []
+        
         self.logger.info(f"Starting trading system analysis from {start_date} to {end_date}")
         
         results = {}
         
         try:
-            # Step 1: Data Universe & Preprocessing
-            self.logger.info("Step 1: Data Universe & Preprocessing")
-            universe_inputs = {
-                "start_date": start_date,
-                "end_date": end_date,
-                "asset_classes": asset_classes,
-                "exchanges": exchanges,
-                "custom_symbols": custom_symbols
-            }
-            
-            universe_result = await self.agents['data_universe'].safe_execute(universe_inputs)
-            if not universe_result.success:
-                raise Exception(f"Data universe failed: {universe_result.error_message}")
-            
+            # Execute analysis pipeline in stages
+            universe_result = await self._run_data_universe_stage(
+                start_date, end_date, asset_classes, exchanges, custom_symbols
+            )
             results['data_universe'] = universe_result
-            self.logger.info(f"Universe processing completed with {universe_result.data['metadata']['symbols_count']} symbols")
             
-            # Step 2: Feature Engineering & Technical Analysis
-            self.logger.info("Step 2: Feature Engineering & Technical Analysis")
-            technical_inputs = {
-                "feature_matrix": universe_result.data["feature_matrix"],
-                "symbols": list(universe_result.data["universe"]),
-                "add_patterns": True,
-                "add_microstructure": False
-            }
-            
-            technical_result = await self.agents['technical_analysis'].safe_execute(technical_inputs)
-            if not technical_result.success:
-                self.logger.warning(f"Technical analysis failed: {technical_result.error_message}")
-            else:
+            technical_result = await self._run_technical_analysis_stage(universe_result)
+            if technical_result.success:
                 results['technical_analysis'] = technical_result
-                self.logger.info(f"Technical analysis completed with {technical_result.data['feature_summary']['total_features_added']} features added")
             
-            # Step 3: ML Model Ensemble
-            if technical_result.success:
-                self.logger.info("Step 3: ML Model Ensemble")
-                ml_inputs = {
-                    "enhanced_feature_matrix": technical_result.data["enhanced_feature_matrix"],
-                    "target_variable": "forward_return_1d",
-                    "train_models": True,
-                    "prediction_mode": "regression",
-                    "symbols": list(universe_result.data["universe"])
-                }
+            ml_result = await self._run_ml_ensemble_stage(universe_result, technical_result)
+            if ml_result and ml_result.success:
+                results['ml_ensemble'] = ml_result
+            
+            strategy_results = await self._run_strategy_stages(universe_result, technical_result, results)
+            results.update(strategy_results)
+            
+            synthesis_result = await self._run_signal_synthesis_stage(results)
+            if synthesis_result and synthesis_result.success:
+                results['signal_synthesis'] = synthesis_result
                 
-                ml_result = await self.agents['ml_ensemble'].safe_execute(ml_inputs)
-                if not ml_result.success:
-                    self.logger.warning(f"ML ensemble failed: {ml_result.error_message}")
-                else:
-                    results['ml_ensemble'] = ml_result
-                    self.logger.info(f"ML ensemble completed with {ml_result.metadata['models_trained']} models trained")
+                risk_result = await self._run_risk_modeling_stage(synthesis_result)
+                if risk_result and risk_result.success:
+                    results['risk_modeling'] = risk_result
             
-            # Step 4A: Momentum Strategy
-            if technical_result.success:
-                self.logger.info("Step 4A: Momentum Strategy Analysis")
+            final_recommendations = await self._run_final_recommendation_stage(results)
+            if final_recommendations:
+                results['final_recommendations'] = final_recommendations
+                
+            return self._create_analysis_summary(results)
+            
+        except Exception as e:
+            self.logger.error(f"Analysis failed: {str(e)}")
+            return {"error": str(e), "partial_results": results}
+    
+    async def _run_data_universe_stage(self, start_date, end_date, asset_classes, exchanges, custom_symbols):
+        """Run data universe and preprocessing stage."""
+        self.logger.info("Step 1: Data Universe & Preprocessing")
+        
+        universe_inputs = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "asset_classes": asset_classes,
+            "exchanges": exchanges,
+            "custom_symbols": custom_symbols
+        }
+        
+        universe_result = await self.agents['data_universe'].safe_execute(universe_inputs)
+        if not universe_result.success:
+            raise Exception(f"Data universe failed: {universe_result.error_message}")
+        
+        symbols_count = universe_result.data['metadata']['symbols_count']
+        self.logger.info(f"Universe processing completed with {symbols_count} symbols")
+        return universe_result
+    
+    async def _run_technical_analysis_stage(self, universe_result):
+        """Run technical analysis and feature engineering stage."""
+        self.logger.info("Step 2: Feature Engineering & Technical Analysis")
+        
+        technical_inputs = {
+            "feature_matrix": universe_result.data["feature_matrix"],
+            "symbols": list(universe_result.data["universe"]),
+            "add_patterns": True,
+            "add_microstructure": False
+        }
+        
+        technical_result = await self.agents['technical_analysis'].safe_execute(technical_inputs)
+        if not technical_result.success:
+            self.logger.warning(f"Technical analysis failed: {technical_result.error_message}")
+        else:
+            features_added = technical_result.data['feature_summary']['total_features_added']
+            self.logger.info(f"Technical analysis completed with {features_added} features added")
+        
+        return technical_result
+    
+    async def _run_ml_ensemble_stage(self, universe_result, technical_result):
+        """Run ML ensemble stage if technical analysis succeeded."""
+        if not technical_result.success:
+            return None
+            
+        self.logger.info("Step 3: ML Model Ensemble")
+        
+        ml_inputs = {
+            "enhanced_feature_matrix": technical_result.data["enhanced_feature_matrix"],
+            "target_variable": "forward_return_1d",
+            "train_models": True,
+            "prediction_mode": "regression",
+            "symbols": list(universe_result.data["universe"])
+        }
+        
+        ml_result = await self.agents['ml_ensemble'].safe_execute(ml_inputs)
+        if not ml_result.success:
+            self.logger.warning(f"ML ensemble failed: {ml_result.error_message}")
+        else:
+            models_trained = ml_result.metadata['models_trained']
+            self.logger.info(f"ML ensemble completed with {models_trained} models trained")
+        
+        return ml_result
+    
+    async def _run_strategy_stages(self, universe_result, technical_result, results):
+        """Run all strategy analysis stages."""
+        strategy_results = {}
+        
+        if technical_result.success:
+            # Momentum strategy
+            momentum_result = await self._run_momentum_strategy(universe_result, technical_result, results)
+            if momentum_result and momentum_result.success:
+                strategy_results['momentum_strategy'] = momentum_result
+            
+            # Statistical arbitrage strategy
+            stat_arb_result = await self._run_stat_arb_strategy(universe_result, technical_result)
+            if stat_arb_result and stat_arb_result.success:
+                strategy_results['stat_arb'] = stat_arb_result
+            
+            # Cross-asset strategy
+            cross_asset_result = await self._run_cross_asset_strategy(universe_result, technical_result)
+            if cross_asset_result and cross_asset_result.success:
+                strategy_results['cross_asset'] = cross_asset_result
+        
+        # Event-driven strategy (doesn't require technical analysis)
+        event_driven_result = await self._run_event_driven_strategy(universe_result)
+        if event_driven_result and event_driven_result.success:
+            strategy_results['event_driven'] = event_driven_result
+        
+        # Options strategy (doesn't require technical analysis)
+        options_result = await self._run_options_strategy(universe_result)
+        if options_result and options_result.success:
+            strategy_results['options_strategy'] = options_result
+        
+        return strategy_results
+    
+    async def _run_momentum_strategy(self, universe_result, technical_result, results):
+        """Run momentum strategy analysis."""
+        self.logger.info("Step 4A: Momentum Strategy Analysis")
                 momentum_inputs = {
                     "enhanced_feature_matrix": technical_result.data["enhanced_feature_matrix"],
                     "ml_predictions": results.get('ml_ensemble', {}).data if 'ml_ensemble' in results else {},

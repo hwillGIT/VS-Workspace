@@ -34,6 +34,7 @@ redis:
 # Market Data APIs
 market_data:
   primary_provider: "alpha_vantage"
+  crypto_provider: "crypto_binance"
   
   alpha_vantage:
     api_key: "${ALPHA_VANTAGE_API_KEY}"
@@ -47,6 +48,24 @@ market_data:
   quandl:
     api_key: "${QUANDL_API_KEY}"
     base_url: "https://www.quandl.com/api/v3"
+
+# Cryptocurrency Exchange APIs
+crypto:
+  binance:
+    api_key: "${BINANCE_API_KEY}"
+    secret: "${BINANCE_SECRET}"
+    sandbox: false
+    
+  coinbasepro:
+    api_key: "${COINBASE_API_KEY}"
+    secret: "${COINBASE_SECRET}"
+    passphrase: "${COINBASE_PASSPHRASE}"
+    sandbox: false
+    
+  kraken:
+    api_key: "${KRAKEN_API_KEY}"
+    secret: "${KRAKEN_SECRET}"
+    sandbox: false
 
 # Asset Universe Configuration
 universe:
@@ -188,6 +207,54 @@ monitoring:
   
   email_alerts: false
   slack_webhook: "${SLACK_WEBHOOK_URL}"
+
+# Backtesting Configuration
+backtesting:
+  default_initial_cash: 100000
+  default_commission: 0.001
+  default_slippage: 0.0001
+  
+  strategy_configs:
+    momentum:
+      lookback_period: 20
+      threshold: 0.02
+      min_volume: 1000000
+      max_positions: 10
+      
+    stat_arb:
+      z_score_entry: 2.0
+      z_score_exit: 0.5
+      lookback_period: 252
+      max_pairs: 5
+      
+    event_driven:
+      sentiment_threshold: 0.6
+      event_window: 5
+      earnings_weight: 0.4
+      
+    options:
+      max_dte: 45
+      min_prob_profit: 0.6
+      volatility_threshold: 0.2
+      
+    cross_asset:
+      correlation_threshold: 0.7
+      rebalance_frequency: monthly
+      diversification_factor: 0.8
+      
+    multi_agent:
+      agent_weights:
+        momentum: 0.3
+        stat_arb: 0.2
+        event_driven: 0.2
+        cross_asset: 0.3
+      consensus_threshold: 0.6
+      min_confirming_agents: 2
+  
+  performance_benchmarks:
+    risk_free_rate: 0.02
+    benchmark_return: 0.10
+    benchmark_volatility: 0.16
 
 # Development Settings
 development:

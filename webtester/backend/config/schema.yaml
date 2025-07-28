@@ -1,0 +1,44 @@
+# This file defines the database schema for the Webtester backend.
+# It is used to create and configure the database tables.
+
+# Define the tables in the database.
+tables:
+  # Table for storing code iterations.
+  code_iterations:
+    # Define the columns for the code_iterations table.
+    columns:
+      - name: id # Unique identifier for each code iteration.
+        type: INTEGER # Integer data type.
+        primary_key: true # This column is the primary key.
+        auto_increment: true # The value is automatically incremented for new rows.
+      - name: timestamp # Timestamp when the code iteration was saved.
+        type: TEXT # Text data type to store the timestamp string.
+      - name: content # The actual code content.
+        type: TEXT # Text data type to store the code.
+      - name: language # The programming language of the code.
+        type: TEXT # Text data type to store the language name.
+
+  # Table for storing test iterations.
+  test_iterations:
+    # Define the columns for the test_iterations table.
+    columns:
+      - name: id # Unique identifier for each test iteration.
+        type: INTEGER # Integer data type.
+        primary_key: true # This column is the primary key.
+        auto_increment: true # The value is automatically incremented for new rows.
+      - name: timestamp # Timestamp when the test iteration was saved.
+        type: TEXT # Text data type to store the timestamp string.
+      - name: content # The actual test content.
+        type: TEXT # Text data type to store the tests.
+      - name: language # The programming language of the tests.
+        type: TEXT # Text data type to store the language name.
+      - name: code_iteration_id # Foreign key linking to the associated code iteration.
+        type: INTEGER # Integer data type.
+        foreign_key:
+          table: code_iterations # The foreign key references the code_iterations table.
+          column: id # The foreign key references the 'id' column in the code_iterations table.
+
+# Note: This schema is a starting point.
+# Additional tables and columns can be added here as needed
+# to support features like diff results, metrics, user data, etc.
+# The backend logic will read this file to create or update the database schema.

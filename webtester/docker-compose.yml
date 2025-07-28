@@ -1,0 +1,50 @@
+# This file defines the services for the Webtester application using Docker Compose.
+# It orchestrates the frontend, backend, and database containers.
+
+version: '3.8' # Specify the Docker Compose file format version.
+
+services:
+  # Frontend service: Builds and runs the React application.
+  frontend:
+    build: ./frontend # Build the image using the Dockerfile in the ./frontend directory.
+    ports:
+      - "3000:80" # Map port 3000 on the host to port 80 in the container.
+    volumes:
+      - ./frontend:/app # Mount the frontend code directory into the container for development (optional, can be removed for production).
+      - /app/node_modules # Exclude node_modules from the bind mount to prevent issues.
+    # Note: In a production setup, you would typically not mount the code volume
+    # and would rely solely on the built image.
+
+  # Backend service: Builds and runs the Flask application.
+  backend:
+    build: ./backend # Build the image using the Dockerfile in the ./backend directory.
+    ports:
+      - "5000:5000" # Map port 5000 on the host to port 5000 in the container.
+    volumes:
+      - ./backend:/app # Mount the backend code directory into the container for development (optional).
+    environment:
+      - FLASK_APP=app.py # Specify the main Flask application file.
+      - FLASK_RUN_HOST=0.0.0.0 # Make the Flask development server accessible externally.
+      # Add other environment variables here, e.g., database connection details.
+    depends_on:
+      - db # Ensure the database service is started before the backend.
+
+  # Database service: Uses a SQLite database for initial storage.
+  # SQLite stores data in a single file, which can be mounted as a volume.
+  db:
+    image: alpine/git # Using a minimal image to just hold the volume for the SQLite file.
+    volumes:
+      - db_data:/app/data # Mount a named volume to persist the database file.
+    command: "tail -f /dev/null" # Keep the container running.
+    # Note: For a production environment, a dedicated database image like postgres or mysql is recommended.
+    # The configurable schema logic will interact with the database file within the mounted volume.
+
+# Define named volumes for data persistence.
+volumes:
+  db_data: # This volume will store the SQLite database file.
+
+# Note: This docker-compose.yml file sets up the basic services.
+# Further configuration may be needed for production deployments,
+# including proper environment variable management, networking, and scaling.
+# The configurable schema implementation will read configuration files
+# and interact with the database file within the 'db_data' volume.

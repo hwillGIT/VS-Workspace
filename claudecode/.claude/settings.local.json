@@ -19,7 +19,9 @@
       "Bash(git submodule add:*)",
       "Bash(git submodule deinit:*)",
       "Bash(git rm:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(mkdir:*)",
+      "Bash(git clone:*)"
     ],
     "deny": []
   }

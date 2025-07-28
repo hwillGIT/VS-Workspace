@@ -29,20 +29,73 @@ from ....core.base.agent import BaseAgent, AgentOutput
 from ....core.base.exceptions import ValidationError, DataError
 from ....core.utils.data_validation import DataValidator
 from ....core.utils.math_utils import MathUtils
+from ....core.pricing.quantlib_engine import QuantLibPricingEngine, OptionType, PricingModel
 
 
 class GreeksCalculator:
-    """Calculate option Greeks with multiple model validation."""
+    """Calculate option Greeks with multiple model validation using QuantLib."""
     
     def __init__(self):
         self.logger = logger.bind(component="greeks_calculator")
+        self.quantlib_engine = QuantLibPricingEngine()
     
     def calculate_greeks(self, option_data: Dict[str, Any]) -> Dict[str, float]:
-        """Calculate all Greeks for an option."""
+        """Calculate all Greeks for an option using QuantLib."""
         try:
             S = option_data["underlying_price"]
             K = option_data["strike"]
-            T = option_data["time_to_expiry"]
+            r = option_data.get("risk_free_rate", 0.02)
+            dividend_yield = option_data.get("dividend_yield", 0.0)
+            sigma = option_data["implied_volatility"]
+            option_type_str = option_data["option_type"].lower()
+            
+            # Convert expiry to datetime if it's not already
+            if isinstance(option_data.get("expiration_date"), str):
+                from datetime import datetime
+                maturity_date = datetime.strptime(option_data["expiration_date"], "%Y-%m-%d")
+            else:
+                # If it's already a datetime or calculate from time_to_expiry
+                T = option_data.get("time_to_expiry", 30/365)  # Default 30 days
+                maturity_date = datetime.now() + timedelta(days=int(T * 365))
+            
+            # Convert option type
+            option_type = OptionType.CALL if option_type_str == "call" else OptionType.PUT
+            
+            # Use QuantLib for pricing and Greeks
+            pricing_result = self.quantlib_engine.price_vanilla_option(
+                spot_price=S,
+                strike=K,
+                risk_free_rate=r,
+                dividend_yield=dividend_yield,
+                volatility=sigma,
+                maturity_date=maturity_date,
+                option_type=option_type,
+                model=PricingModel.BLACK_SCHOLES
+            )
+            
+            # Map QuantLib results to our format
+            greeks = {
+                "delta": pricing_result["delta"],
+                "gamma": pricing_result["gamma"],
+                "theta": pricing_result["theta"],
+                "vega": pricing_result["vega"],
+                "rho": pricing_result["rho"],
+                "theoretical_price": pricing_result["price"]
+            }
+            
+            return greeks
+            
+        except Exception as e:
+            self.logger.error(f"QuantLib Greeks calculation failed: {e}")
+            # Fallback to basic Black-Scholes if QuantLib fails
+            return self._calculate_greeks_fallback(option_data)
+    
+    def _calculate_greeks_fallback(self, option_data: Dict[str, Any]) -> Dict[str, float]:
+        """Fallback Black-Scholes Greeks calculation."""
+        try:
+            S = option_data["underlying_price"]
+            K = option_data["strike"]
+            T = option_data.get("time_to_expiry", 30/365)
             r = option_data.get("risk_free_rate", 0.02)
             sigma = option_data["implied_volatility"]
             option_type = option_data["option_type"].lower()
@@ -87,14 +140,35 @@ class GreeksCalculator:
             return greeks
             
         except Exception as e:
-            self.logger.error(f"Greeks calculation failed: {e}")
+            self.logger.error(f"Fallback Greeks calculation failed: {e}")
             return {
                 "delta": 0, "gamma": 0, "theta": 0, 
                 "vega": 0, "rho": 0, "theoretical_price": 0
             }
-    
+
     def calculate_portfolio_greeks(self, positions: List[Dict[str, Any]]) -> Dict[str, float]:
-        """Calculate portfolio-level Greeks."""
+        """Calculate portfolio-level Greeks using QuantLib."""
+        try:
+            # Use QuantLib's portfolio Greeks calculation
+            portfolio_greeks = self.quantlib_engine.calculate_portfolio_greeks(positions)
+            
+            # Ensure compatibility with existing code
+            return {
+                "delta": portfolio_greeks["delta"],
+                "gamma": portfolio_greeks["gamma"],
+                "theta": portfolio_greeks["theta"],
+                "vega": portfolio_greeks["vega"],
+                "rho": portfolio_greeks["rho"],
+                "net_premium": portfolio_greeks["total_value"]
+            }
+            
+        except Exception as e:
+            self.logger.error(f"QuantLib portfolio Greeks calculation failed: {e}")
+            # Fallback to manual calculation
+            return self._calculate_portfolio_greeks_fallback(positions)
+    
+    def _calculate_portfolio_greeks_fallback(self, positions: List[Dict[str, Any]]) -> Dict[str, float]:
+        """Fallback portfolio Greeks calculation."""
         portfolio_greeks = {
             "delta": 0, "gamma": 0, "theta": 0, 
             "vega": 0, "rho": 0, "net_premium": 0
@@ -328,11 +402,16 @@ class VolatilityAnalyzer:
 
 
 class OptionsStrategyBuilder:
-    """Build and optimize multi-leg options strategies."""
+    """Build and optimize multi-leg options strategies using QuantLib."""
     
     def __init__(self):
         self.logger = logger.bind(component="strategy_builder")
         self.greeks_calc = GreeksCalculator()
+        self.quantlib_engine = QuantLibPricingEngine()
+        
+        # Import strategy pricer for complex strategies
+        from ....core.pricing.quantlib_engine import OptionsStrategyPricer
+        self.strategy_pricer = OptionsStrategyPricer(self.quantlib_engine)
         
         # Strategy templates
         self.strategy_templates = {
@@ -501,7 +580,7 @@ class OptionsStrategyBuilder:
     def _build_iron_condor(self, options_data: List[Dict[str, Any]],
                           market_view: Dict[str, Any],
                           risk_constraints: Dict[str, Any]) -> Dict[str, Any]:
-        """Build iron condor strategy."""
+        """Build iron condor strategy using QuantLib pricing."""
         calls = [opt for opt in options_data if opt.get("option_type", "").lower() == "call"]
         puts = [opt for opt in options_data if opt.get("option_type", "").lower() == "put"]
         
@@ -527,46 +606,181 @@ class OptionsStrategyBuilder:
         if not all([short_put, short_call, long_put, long_call]):
             return {"is_valid": False, "reason": "Could not find all required options"}
         
-        # Calculate net credit
-        net_credit = (
-            short_put.get("bid_price", 0) + short_call.get("bid_price", 0) -
-            long_put.get("ask_price", 0) - long_call.get("ask_price", 0)
-        )
-        
-        max_profit = net_credit
-        max_loss = max(
-            (short_put_strike - long_put_strike),
-            (long_call_strike - short_call_strike)
-        ) - net_credit
-        
-        return {
-            "is_valid": True,
-            "strategy_type": "iron_condor",
-            "legs": [
-                {"action": "buy", "option": long_put, "quantity": 1},
-                {"action": "sell", "option": short_put, "quantity": 1},
-                {"action": "sell", "option": short_call, "quantity": 1},
-                {"action": "buy", "option": long_call, "quantity": 1}
-            ],
-            "net_credit": net_credit,
-            "max_profit": max_profit,
-            "max_loss": max_loss,
-            "profit_range": (short_put_strike, short_call_strike),
-            "profit_probability": self._calculate_range_probability(underlying_price, short_put_strike, short_call_strike)
-        }
+        try:
+            # Use QuantLib for precise iron condor pricing
+            strikes = (long_put_strike, short_put_strike, short_call_strike, long_call_strike)
+            
+            # Get common parameters
+            risk_free_rate = options_data[0].get("risk_free_rate", 0.02)
+            dividend_yield = options_data[0].get("dividend_yield", 0.0)
+            volatility = np.mean([opt.get("implied_volatility", 0.25) for opt in [short_put, short_call, long_put, long_call]])
+            
+            # Convert expiry to datetime
+            if isinstance(options_data[0].get("expiration_date"), str):
+                maturity_date = datetime.strptime(options_data[0]["expiration_date"], "%Y-%m-%d")
+            else:
+                T = options_data[0].get("time_to_expiry", 30/365)
+                maturity_date = datetime.now() + timedelta(days=int(T * 365))
+            
+            # Use QuantLib strategy pricer
+            quantlib_result = self.strategy_pricer.price_iron_condor(
+                spot_price=underlying_price,
+                strikes=strikes,
+                risk_free_rate=risk_free_rate,
+                dividend_yield=dividend_yield,
+                volatility=volatility,
+                maturity_date=maturity_date
+            )
+            
+            return {
+                "is_valid": True,
+                "strategy_type": "iron_condor",
+                "legs": [
+                    {"action": "buy", "option": long_put, "quantity": 1},
+                    {"action": "sell", "option": short_put, "quantity": 1},
+                    {"action": "sell", "option": short_call, "quantity": 1},
+                    {"action": "buy", "option": long_call, "quantity": 1}
+                ],
+                "net_credit": quantlib_result["strategy_price"],
+                "max_profit": quantlib_result["max_profit"],
+                "max_loss": quantlib_result["max_loss"],
+                "breakeven_lower": quantlib_result["breakeven_lower"],
+                "breakeven_upper": quantlib_result["breakeven_upper"],
+                "profit_range": (short_put_strike, short_call_strike),
+                "profit_probability": self._calculate_range_probability(underlying_price, short_put_strike, short_call_strike),
+                "quantlib_greeks": quantlib_result["greeks"],
+                "individual_legs": quantlib_result["individual_legs"]
+            }
+            
+        except Exception as e:
+            self.logger.warning(f"QuantLib iron condor pricing failed, using fallback: {e}")
+            # Fallback to basic calculation
+            net_credit = (
+                short_put.get("bid_price", 0) + short_call.get("bid_price", 0) -
+                long_put.get("ask_price", 0) - long_call.get("ask_price", 0)
+            )
+            
+            max_profit = net_credit
+            max_loss = max(
+                (short_put_strike - long_put_strike),
+                (long_call_strike - short_call_strike)
+            ) - net_credit
+            
+            return {
+                "is_valid": True,
+                "strategy_type": "iron_condor",
+                "legs": [
+                    {"action": "buy", "option": long_put, "quantity": 1},
+                    {"action": "sell", "option": short_put, "quantity": 1},
+                    {"action": "sell", "option": short_call, "quantity": 1},
+                    {"action": "buy", "option": long_call, "quantity": 1}
+                ],
+                "net_credit": net_credit,
+                "max_profit": max_profit,
+                "max_loss": max_loss,
+                "profit_range": (short_put_strike, short_call_strike),
+                "profit_probability": self._calculate_range_probability(underlying_price, short_put_strike, short_call_strike)
+            }
     
     def _build_butterfly_spread(self, options_data: List[Dict[str, Any]],
                                market_view: Dict[str, Any],
                                risk_constraints: Dict[str, Any]) -> Dict[str, Any]:
-        """Build butterfly spread strategy."""
-        # Implementation for butterfly spread
+        """Build butterfly spread strategy using QuantLib."""
         calls = [opt for opt in options_data if opt.get("option_type", "").lower() == "call"]
         
         if len(calls) < 3:
             return {"is_valid": False, "reason": "Insufficient calls for butterfly"}
         
-        # Simplified butterfly implementation
-        return {"is_valid": False, "reason": "Butterfly spread not fully implemented"}
+        underlying_price = options_data[0].get("underlying_price", 100)
+        
+        # Find center strike near ATM
+        center_strike = self._find_closest_strike(calls, underlying_price)
+        center_call = self._find_option_by_strike(calls, center_strike)
+        
+        # Wing width (typically 5-10% of underlying price)
+        wing_width = max(5, underlying_price * 0.05)
+        wing_width = round(wing_width)  # Round to nearest dollar
+        
+        # Find wing strikes
+        lower_strike = self._find_closest_strike(calls, center_strike - wing_width)
+        upper_strike = self._find_closest_strike(calls, center_strike + wing_width)
+        
+        lower_call = self._find_option_by_strike(calls, lower_strike)
+        upper_call = self._find_option_by_strike(calls, upper_strike)
+        
+        if not all([lower_call, center_call, upper_call]):
+            return {"is_valid": False, "reason": "Could not find all required strikes for butterfly"}
+        
+        try:
+            # Use QuantLib for precise butterfly pricing
+            risk_free_rate = options_data[0].get("risk_free_rate", 0.02)
+            dividend_yield = options_data[0].get("dividend_yield", 0.0)
+            volatility = np.mean([opt.get("implied_volatility", 0.25) for opt in [lower_call, center_call, upper_call]])
+            
+            # Convert expiry to datetime
+            if isinstance(options_data[0].get("expiration_date"), str):
+                maturity_date = datetime.strptime(options_data[0]["expiration_date"], "%Y-%m-%d")
+            else:
+                T = options_data[0].get("time_to_expiry", 30/365)
+                maturity_date = datetime.now() + timedelta(days=int(T * 365))
+            
+            # Use QuantLib strategy pricer
+            quantlib_result = self.strategy_pricer.price_butterfly_spread(
+                spot_price=underlying_price,
+                center_strike=center_strike,
+                wing_width=wing_width,
+                risk_free_rate=risk_free_rate,
+                dividend_yield=dividend_yield,
+                volatility=volatility,
+                maturity_date=maturity_date,
+                option_type=OptionType.CALL
+            )
+            
+            return {
+                "is_valid": True,
+                "strategy_type": "butterfly_spread",
+                "legs": [
+                    {"action": "buy", "option": lower_call, "quantity": 1},
+                    {"action": "sell", "option": center_call, "quantity": 2},
+                    {"action": "buy", "option": upper_call, "quantity": 1}
+                ],
+                "net_debit": abs(quantlib_result["strategy_price"]),
+                "max_profit": quantlib_result["max_profit"],
+                "max_loss": quantlib_result["max_loss"],
+                "breakeven_lower": quantlib_result["breakeven_lower"],
+                "breakeven_upper": quantlib_result["breakeven_upper"],
+                "profit_probability": self._calculate_range_probability(underlying_price, 
+                                    quantlib_result["breakeven_lower"], quantlib_result["breakeven_upper"]),
+                "quantlib_greeks": quantlib_result["greeks"],
+                "individual_legs": quantlib_result["individual_legs"]
+            }
+            
+        except Exception as e:
+            self.logger.warning(f"QuantLib butterfly pricing failed, using fallback: {e}")
+            # Fallback to basic calculation
+            net_debit = (
+                lower_call.get("ask_price", 0) - 2 * center_call.get("bid_price", 0) + 
+                upper_call.get("ask_price", 0)
+            )
+            
+            max_profit = wing_width - abs(net_debit)
+            max_loss = abs(net_debit)
+            
+            return {
+                "is_valid": True,
+                "strategy_type": "butterfly_spread",
+                "legs": [
+                    {"action": "buy", "option": lower_call, "quantity": 1},
+                    {"action": "sell", "option": center_call, "quantity": 2},
+                    {"action": "buy", "option": upper_call, "quantity": 1}
+                ],
+                "net_debit": abs(net_debit),
+                "max_profit": max_profit,
+                "max_loss": max_loss,
+                "profit_probability": self._calculate_range_probability(underlying_price, 
+                                    center_strike - (wing_width - abs(net_debit)), 
+                                    center_strike + (wing_width - abs(net_debit)))
+            }
     
     def _build_straddle(self, options_data: List[Dict[str, Any]],
                        market_view: Dict[str, Any],

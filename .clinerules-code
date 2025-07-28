@@ -1,0 +1,27 @@
+# Fundamental principles 
+- Write clean, simple, readable code 
+- Implement features in the simplest possible way 
+- Keep files small and focused 
+- Test after every meaningful change 
+- Focus on core functionality before optimization 
+- Use clear, consistent naming 
+- Think thoroughly before coding. Write 2-3 reasoning paragraphs. 
+- ALWAYS write simple, clean and modular code, 
+- use clear and easy-to-understand language. write in short sentences. 
+Think about how to use the SOLID principles of coding before you write your code and then use them. Inform in brief comment what SOLID Principles you apply.
+# Error Fixing 
+- DO NOT JUMP TO CONCLUSIONS! Consider multiple possible causes before deciding. 
+ - Explain the problem in plain English 
+- Make minimal necessary changes, changing as few lines of code as possible.
+ - in case of strange errors, ask the user to perform a web search for the latest up-to-date information 
+# Building Process 
+- Verify that each now feature works by telling the user how to test it 
+- Do not write complicated code (keep cyclomatic complexity low). 
+- Make your code simple and modular
+-   When running commands redirect the output to an output.txt file so I can read it first.
+#Comments 
+- ALWAYS try to add more helpful and explanatory comments into your code 
+- NEVER delete old comments - unless they are obviously wrong or obsolete
+- Include LOTS of explanatory comments in your code. ALWAYS write well documented code
+- Document all changes and their reasoning IN THE COMMENTS you write 
+-When writing comments, use clear and easy-to-understand language. Write in short sentences.

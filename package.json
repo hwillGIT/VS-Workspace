@@ -1,0 +1,7 @@
+{
+  "name": "task-master-ai",
+  "version": "0.12.1",
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  }
+}

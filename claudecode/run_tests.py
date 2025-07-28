@@ -86,6 +86,15 @@ def run_specific_test_suites():
         ("Risk Modeling Agent", "test_risk_modeling_agent.py"),
         ("Recommendation Agent", "test_recommendation_agent.py"),
         ("Data Universe Agent", "test_data_universe.py"),
+        ("Momentum Agent", "test_momentum_agent.py"),
+        ("Statistical Arbitrage Agent", "test_stat_arb_agent.py"),
+        ("Event-Driven Agent", "test_event_driven_agent.py"),
+        ("Options Agent", "test_options_agent.py"),
+        ("Cross-Asset Agent", "test_cross_asset_agent.py"),
+        ("Signal Synthesis Agent", "test_signal_synthesis_agent.py"),
+        ("Integration Tests", "test_integration_comprehensive.py"),
+        ("Performance Benchmarks", "test_performance_benchmarks.py"),
+        ("Stress Scenarios", "test_stress_scenarios.py"),
     ]
     
     print("\n" + "-"*60)

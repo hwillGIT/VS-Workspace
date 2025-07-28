@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import yfinance as yf
 import requests
+import ccxt
+import ccxt.async_support as ccxt_async
 from loguru import logger
 
 from ..base.config import config
@@ -270,6 +272,163 @@ class AlphaVantageProvider(BaseMarketDataProvider):
             raise APIError(f"Alpha Vantage intraday error for {symbol}: {str(e)}")
 
 
+class CryptoDataProvider(BaseMarketDataProvider):
+    """Cryptocurrency data provider using CCXT."""
+    
+    def __init__(self, exchange_name: str = 'binance'):
+        self.name = f"CCXT-{exchange_name.capitalize()}"
+        self.exchange_name = exchange_name
+        self.logger = logger.bind(provider=f"ccxt_{exchange_name}")
+        
+        # Initialize exchange
+        try:
+            exchange_class = getattr(ccxt, exchange_name)
+            self.exchange = exchange_class({
+                'apiKey': config.get(f"crypto.{exchange_name}.api_key", ""),
+                'secret': config.get(f"crypto.{exchange_name}.secret", ""),
+                'timeout': 30000,
+                'enableRateLimit': True,
+                'sandbox': config.get(f"crypto.{exchange_name}.sandbox", False)
+            })
+            
+            # Async exchange for concurrent operations
+            async_exchange_class = getattr(ccxt_async, exchange_name)
+            self.async_exchange = async_exchange_class({
+                'apiKey': config.get(f"crypto.{exchange_name}.api_key", ""),
+                'secret': config.get(f"crypto.{exchange_name}.secret", ""),
+                'timeout': 30000,
+                'enableRateLimit': True,
+                'sandbox': config.get(f"crypto.{exchange_name}.sandbox", False)
+            })
+            
+        except Exception as e:
+            raise APIError(f"Failed to initialize {exchange_name} exchange: {str(e)}")
+    
+    async def get_historical_data(self, symbol: str, start_date: datetime, 
+                                end_date: datetime, interval: str = "1d") -> pd.DataFrame:
+        """
+        Get historical OHLCV data for cryptocurrency.
+        
+        Args:
+            symbol: Crypto trading pair (e.g., 'BTC/USDT')
+            start_date: Start date
+            end_date: End date
+            interval: Timeframe (1m, 5m, 15m, 1h, 4h, 1d, 1w)
+            
+        Returns:
+            DataFrame with OHLCV data
+        """
+        try:
+            # Convert datetime to milliseconds timestamp
+            since = int(start_date.timestamp() * 1000)
+            
+            # Map interval to exchange timeframe
+            timeframe_map = {
+                "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m",
+                "1h": "1h", "4h": "4h", "1d": "1d", "1w": "1w"
+            }
+            timeframe = timeframe_map.get(interval, "1d")
+            
+            # Fetch OHLCV data
+            ohlcv_data = await self.async_exchange.fetch_ohlcv(
+                symbol, timeframe, since, limit=1000
+            )
+            
+            if not ohlcv_data:
+                raise DataError(f"No data found for symbol {symbol}")
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(ohlcv_data, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+            df.set_index('timestamp', inplace=True)
+            
+            # Filter by end date
+            df = df[df.index <= end_date]
+            
+            self.logger.info(f"Retrieved {len(df)} crypto records for {symbol}")
+            return df
+            
+        except Exception as e:
+            raise APIError(f"CCXT {self.exchange_name} API error for {symbol}: {str(e)}")
+        finally:
+            if hasattr(self, 'async_exchange'):
+                await self.async_exchange.close()
+    
+    async def get_real_time_quote(self, symbol: str) -> Dict:
+        """Get real-time quote for cryptocurrency."""
+        try:
+            ticker = await self.async_exchange.fetch_ticker(symbol)
+            
+            quote = {
+                'symbol': symbol,
+                'price': ticker.get('last', 0),
+                'change': ticker.get('change', 0),
+                'change_percent': ticker.get('percentage', 0),
+                'volume': ticker.get('baseVolume', 0),
+                'bid': ticker.get('bid', 0),
+                'ask': ticker.get('ask', 0),
+                'timestamp': datetime.utcnow()
+            }
+            
+            return quote
+            
+        except Exception as e:
+            raise APIError(f"CCXT {self.exchange_name} quote error for {symbol}: {str(e)}")
+        finally:
+            if hasattr(self, 'async_exchange'):
+                await self.async_exchange.close()
+    
+    async def get_intraday_data(self, symbol: str, interval: str = "1m") -> pd.DataFrame:
+        """Get intraday crypto data."""
+        # For crypto, just get recent data with specified interval
+        end_date = datetime.utcnow()
+        start_date = end_date - timedelta(hours=24)  # Last 24 hours
+        
+        return await self.get_historical_data(symbol, start_date, end_date, interval)
+    
+    async def get_crypto_markets(self) -> List[Dict]:
+        """Get list of available cryptocurrency markets."""
+        try:
+            markets = await self.async_exchange.load_markets()
+            
+            crypto_markets = []
+            for symbol, market in markets.items():
+                if market.get('active', True):
+                    crypto_markets.append({
+                        'symbol': symbol,
+                        'base': market.get('base'),
+                        'quote': market.get('quote'),
+                        'type': market.get('type', 'spot'),
+                        'limits': market.get('limits', {})
+                    })
+            
+            return crypto_markets
+            
+        except Exception as e:
+            raise APIError(f"Failed to get crypto markets: {str(e)}")
+        finally:
+            if hasattr(self, 'async_exchange'):
+                await self.async_exchange.close()
+    
+    async def get_orderbook(self, symbol: str, limit: int = 20) -> Dict:
+        """Get order book for cryptocurrency pair."""
+        try:
+            orderbook = await self.async_exchange.fetch_order_book(symbol, limit)
+            
+            return {
+                'symbol': symbol,
+                'bids': orderbook.get('bids', []),
+                'asks': orderbook.get('asks', []),
+                'timestamp': datetime.utcnow()
+            }
+            
+        except Exception as e:
+            raise APIError(f"CCXT orderbook error for {symbol}: {str(e)}")
+        finally:
+            if hasattr(self, 'async_exchange'):
+                await self.async_exchange.close()
+
+
 class MarketDataAPI:
     """
     Unified market data API that aggregates multiple providers.
@@ -278,13 +437,17 @@ class MarketDataAPI:
     def __init__(self):
         self.providers = {
             'yahoo': YahooFinanceProvider(),
-            'alpha_vantage': AlphaVantageProvider() if config.alpha_vantage_api_key else None
+            'alpha_vantage': AlphaVantageProvider() if config.alpha_vantage_api_key else None,
+            'crypto_binance': CryptoDataProvider('binance'),
+            'crypto_coinbase': CryptoDataProvider('coinbasepro'),
+            'crypto_kraken': CryptoDataProvider('kraken')
         }
         
         # Remove None providers
         self.providers = {k: v for k, v in self.providers.items() if v is not None}
         
         self.primary_provider = config.get("market_data.primary_provider", "yahoo")
+        self.crypto_provider = config.get("market_data.crypto_provider", "crypto_binance")
         self.logger = logger.bind(service="market_data_api")
         
         if not self.providers:
@@ -397,3 +560,98 @@ class MarketDataAPI:
         }
         
         return sample_symbols.get(exchange.upper(), [])
+    
+    async def get_crypto_data(self, symbol: str, start_date: datetime, 
+                            end_date: datetime, interval: str = "1d",
+                            exchange: str = "binance") -> pd.DataFrame:
+        """
+        Get cryptocurrency data from specified exchange.
+        
+        Args:
+            symbol: Crypto trading pair (e.g., 'BTC/USDT')
+            start_date: Start date
+            end_date: End date
+            interval: Data interval
+            exchange: Exchange name (binance, coinbasepro, kraken)
+            
+        Returns:
+            DataFrame with OHLCV data
+        """
+        provider_name = f"crypto_{exchange}"
+        
+        if provider_name not in self.providers:
+            raise APIError(f"Crypto provider {provider_name} not available")
+        
+        return await self.providers[provider_name].get_historical_data(
+            symbol, start_date, end_date, interval
+        )
+    
+    async def get_crypto_markets(self, exchange: str = "binance") -> List[Dict]:
+        """Get available cryptocurrency markets from exchange."""
+        provider_name = f"crypto_{exchange}"
+        
+        if provider_name not in self.providers:
+            raise APIError(f"Crypto provider {provider_name} not available")
+        
+        provider = self.providers[provider_name]
+        if hasattr(provider, 'get_crypto_markets'):
+            return await provider.get_crypto_markets()
+        else:
+            raise APIError(f"Provider {provider_name} does not support market listing")
+    
+    async def get_crypto_orderbook(self, symbol: str, exchange: str = "binance", 
+                                 limit: int = 20) -> Dict:
+        """Get order book for cryptocurrency pair."""
+        provider_name = f"crypto_{exchange}"
+        
+        if provider_name not in self.providers:
+            raise APIError(f"Crypto provider {provider_name} not available")
+        
+        provider = self.providers[provider_name]
+        if hasattr(provider, 'get_orderbook'):
+            return await provider.get_orderbook(symbol, limit)
+        else:
+            raise APIError(f"Provider {provider_name} does not support order book data")
+    
+    def is_crypto_symbol(self, symbol: str) -> bool:
+        """Check if symbol is a cryptocurrency pair."""
+        # Common crypto pair patterns
+        crypto_patterns = [
+            '/', '-', '_',  # BTC/USDT, BTC-USD, BTC_USDT
+        ]
+        
+        # Common crypto base currencies
+        crypto_bases = [
+            'BTC', 'ETH', 'BNB', 'ADA', 'SOL', 'DOT', 'LINK', 'MATIC',
+            'AVAX', 'UNI', 'LTC', 'XRP', 'DOGE', 'SHIB'
+        ]
+        
+        # Check if symbol contains common separators
+        has_separator = any(pattern in symbol for pattern in crypto_patterns)
+        
+        # Check if symbol starts with known crypto base
+        starts_with_crypto = any(symbol.upper().startswith(base) for base in crypto_bases)
+        
+        return has_separator or starts_with_crypto
+    
+    async def get_data_auto_detect(self, symbol: str, start_date: datetime,
+                                 end_date: datetime, interval: str = "1d") -> pd.DataFrame:
+        """
+        Automatically detect if symbol is crypto or traditional and fetch data.
+        """
+        if self.is_crypto_symbol(symbol):
+            # Try crypto providers
+            for provider_name in ['crypto_binance', 'crypto_coinbase', 'crypto_kraken']:
+                if provider_name in self.providers:
+                    try:
+                        return await self.providers[provider_name].get_historical_data(
+                            symbol, start_date, end_date, interval
+                        )
+                    except Exception as e:
+                        self.logger.warning(f"Crypto provider {provider_name} failed for {symbol}: {e}")
+                        continue
+            
+            raise APIError(f"All crypto providers failed for symbol {symbol}")
+        else:
+            # Use traditional stock providers
+            return await self.get_historical_data(symbol, start_date, end_date, interval)

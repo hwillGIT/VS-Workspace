@@ -1,0 +1,6 @@
+# This file lists the Python dependencies for the Webtester backend.
+# Each line specifies a package and optionally its version.
+
+Flask==2.3.3 # A lightweight Python web framework. Used for building the REST API.
+PyYAML # Required for reading the schema configuration from a YAML file.
+# Add other dependencies here as needed for database interaction, LLM integration, etc.

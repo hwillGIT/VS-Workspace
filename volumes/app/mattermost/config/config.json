@@ -39,7 +39,7 @@
         "EnableOpenTracing": false,
         "EnableSecurityFixAlert": true,
         "EnableInsecureOutgoingConnections": false,
-        "AllowedUntrustedInternalConnections": "",
+        "AllowedUntrustedInternalConnections": "localhost:5678",
         "EnableMultifactorAuthentication": false,
         "EnforceMultifactorAuthentication": false,
         "EnableUserAccessTokens": false,
