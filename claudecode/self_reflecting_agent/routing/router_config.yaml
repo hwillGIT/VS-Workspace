@@ -1,0 +1,354 @@
+# Model Router Configuration
+# Defines available models, their capabilities, and routing preferences
+
+models:
+  # Anthropic Claude Models
+  claude-3-5-sonnet-20241022:
+    provider: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 200000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 3000
+      cost_per_1k_tokens: 0.003
+      quality_score: 0.95
+    model_params:
+      max_tokens: 8192
+      temperature: 0.1
+    priority: 10
+    enabled: true
+    
+  claude-3-5-haiku-20241022:
+    provider: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 200000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: false
+      supports_function_calling: true
+      latency_ms: 1500
+      cost_per_1k_tokens: 0.001
+      quality_score: 0.88
+    model_params:
+      max_tokens: 8192
+      temperature: 0.1
+    priority: 6
+    enabled: true
+    
+  claude-3-haiku-20240307:
+    provider: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 200000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: false
+      supports_function_calling: true
+      latency_ms: 1800
+      cost_per_1k_tokens: 0.00025
+      quality_score: 0.82
+    model_params:
+      max_tokens: 4096
+      temperature: 0.1
+    priority: 3
+    enabled: true
+
+  # OpenAI GPT Models
+  gpt-4o:
+    provider: openai
+    api_key_env: OPENAI_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 128000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 4000
+      cost_per_1k_tokens: 0.005
+      quality_score: 0.92
+    model_params:
+      max_tokens: 4096
+      temperature: 0.1
+    priority: 8
+    enabled: true
+    
+  gpt-4o-mini:
+    provider: openai
+    api_key_env: OPENAI_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 128000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 2000
+      cost_per_1k_tokens: 0.00015
+      quality_score: 0.8
+    model_params:
+      max_tokens: 4096
+      temperature: 0.1
+    priority: 4
+    enabled: true
+    
+  gpt-4-turbo:
+    provider: openai
+    api_key_env: OPENAI_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 128000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 5000
+      cost_per_1k_tokens: 0.01
+      quality_score: 0.94
+    model_params:
+      max_tokens: 4096
+      temperature: 0.1
+    priority: 9
+    enabled: false  # Expensive, enable if needed
+
+  # Google Gemini Models  
+  gemini-2.0-flash-exp:
+    provider: google
+    api_key_env: GOOGLE_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 1000000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 2500
+      cost_per_1k_tokens: 0.00075
+      quality_score: 0.90
+    model_params:
+      max_output_tokens: 8192
+      temperature: 0.1
+    priority: 7
+    enabled: true
+    
+  gemini-1.5-pro:
+    provider: google
+    api_key_env: GOOGLE_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 2000000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 6000
+      cost_per_1k_tokens: 0.0035
+      quality_score: 0.91
+    model_params:
+      max_output_tokens: 8192
+      temperature: 0.1
+    priority: 5
+    enabled: true
+    
+  gemini-1.5-flash:
+    provider: google
+    api_key_env: GOOGLE_API_KEY
+    base_url: null
+    capabilities:
+      context_length: 1000000
+      supports_code: true
+      supports_reasoning: true
+      supports_vision: true
+      supports_function_calling: true
+      latency_ms: 1200
+      cost_per_1k_tokens: 0.00015
+      quality_score: 0.83
+    model_params:
+      max_output_tokens: 8192
+      temperature: 0.1
+    priority: 2
+    enabled: true
+
+# Routing Rules - Define preferred models for each task type
+# Models are listed in order of preference
+routing_rules:
+  # High-level orchestration and planning
+  orchestration:
+    - claude-3-5-sonnet-20241022   # Best reasoning and planning
+    - gpt-4o                       # Strong general capability
+    - gemini-2.0-flash-exp         # Good reasoning, large context
+    - gpt-4-turbo                  # Fallback high-quality option
+    
+  # Code generation tasks
+  code_generation:
+    - claude-3-5-sonnet-20241022   # Excellent code quality
+    - gpt-4o                       # Strong coding ability
+    - gemini-2.0-flash-exp         # Good code generation
+    - claude-3-5-haiku-20241022    # Fast, decent quality
+    
+  # Debugging and error analysis
+  debugging:
+    - gemini-2.0-flash-exp         # Optimized for debugging
+    - claude-3-5-sonnet-20241022   # Great analysis capability
+    - gpt-4o                       # Solid debugging skills
+    - gemini-1.5-flash             # Fast debugging iteration
+    
+  # Code review and analysis
+  code_review:
+    - claude-3-5-sonnet-20241022   # Best at thorough analysis
+    - gpt-4o                       # Strong review capability
+    - gemini-1.5-pro               # Good for large codebases
+    - claude-3-5-haiku-20241022    # Quick reviews
+    
+  # System architecture and design
+  architecture:
+    - claude-3-5-sonnet-20241022   # Excellent system thinking
+    - gpt-4-turbo                  # Strong architectural planning
+    - gpt-4o                       # Good design capability
+    - gemini-1.5-pro               # Large context for complex systems
+    
+  # Documentation writing
+  documentation:
+    - claude-3-haiku-20240307      # Cost-effective, good quality
+    - gpt-4o-mini                  # Cheap and capable
+    - gemini-1.5-flash             # Fast documentation
+    - claude-3-5-haiku-20241022    # Higher quality when needed
+    
+  # Test creation and testing
+  testing:
+    - claude-3-5-sonnet-20241022   # Thorough test creation
+    - gpt-4o                       # Good test coverage
+    - gemini-2.0-flash-exp         # Good testing patterns
+    - claude-3-5-haiku-20241022    # Quick test generation
+    
+  # Code refactoring
+  refactoring:
+    - claude-3-5-sonnet-20241022   # Best at understanding intent
+    - gpt-4o                       # Good refactoring capability
+    - gemini-1.5-pro               # Large context for big refactors
+    - claude-3-5-haiku-20241022    # Quick refactoring
+    
+  # Research and information gathering
+  research:
+    - gemini-1.5-pro               # Large context for research
+    - claude-3-5-sonnet-20241022   # Thorough research capability
+    - gpt-4o                       # Good research skills
+    - gemini-2.0-flash-exp         # Good information synthesis
+    
+  # Data and code analysis
+  analysis:
+    - claude-3-5-sonnet-20241022   # Excellent analytical thinking
+    - gemini-1.5-pro               # Large context for analysis
+    - gpt-4o                       # Strong analysis capability
+    - gemini-2.0-flash-exp         # Good analytical capability
+    
+  # General conversation and interaction
+  conversation:
+    - claude-3-haiku-20240307      # Cost-effective conversation
+    - gpt-4o-mini                  # Cheap general interaction
+    - gemini-1.5-flash             # Fast responses
+    - claude-3-5-haiku-20241022    # Better conversation quality
+    
+  # Complex reasoning tasks
+  reasoning:
+    - claude-3-5-sonnet-20241022   # Best reasoning capability
+    - gpt-4-turbo                  # Strong logical reasoning
+    - gpt-4o                       # Good reasoning ability
+    - gemini-1.5-pro               # Large context reasoning
+
+# Fallback Configuration
+fallback:
+  # Maximum number of fallback attempts
+  max_attempts: 3
+  
+  # Delay between fallback attempts (seconds)
+  retry_delay: 2
+  
+  # Exponential backoff multiplier
+  backoff_multiplier: 2.0
+  
+  # Emergency fallback models (always try these if configured models fail)
+  emergency_models:
+    - claude-3-haiku-20240307
+    - gpt-4o-mini
+    - gemini-1.5-flash
+
+# Performance Monitoring
+monitoring:
+  # Track performance metrics
+  enable_performance_tracking: true
+  
+  # Minimum requests before using performance data for routing
+  min_requests_for_performance: 5
+  
+  # Weight of performance vs capability in routing decisions
+  performance_weight: 0.4
+  capability_weight: 0.4
+  priority_weight: 0.2
+  
+  # Performance thresholds
+  min_success_rate: 0.7
+  max_acceptable_latency_ms: 30000
+  
+  # Availability check intervals
+  availability_cache_duration: 300  # 5 minutes
+
+# Cost Management
+cost_management:
+  # Enable cost-aware routing
+  enable_cost_optimization: true
+  
+  # Daily cost limits per model (USD)
+  daily_limits:
+    gpt-4-turbo: 10.0
+    claude-3-5-sonnet-20241022: 15.0
+    gemini-1.5-pro: 8.0
+  
+  # Cost-sensitive task types (will prefer cheaper models)
+  cost_sensitive_tasks:
+    - documentation
+    - conversation
+    - testing
+  
+  # Alert thresholds
+  cost_alert_threshold: 50.0  # Alert when daily cost exceeds this
+
+# Rate Limiting
+rate_limiting:
+  # Enable rate limit management
+  enable_rate_limiting: true
+  
+  # Default rate limits (requests per minute)
+  default_rate_limits:
+    anthropic: 60
+    openai: 60
+    google: 60
+  
+  # Model-specific rate limits (override defaults)
+  model_rate_limits:
+    gpt-4-turbo: 20
+    claude-3-5-sonnet-20241022: 50
+
+# Context Management Settings
+context_management:
+  # Enable context preservation across model switches
+  preserve_context: true
+  
+  # Maximum context to preserve when switching models
+  max_preserved_context: 50000
+  
+  # Context compression strategy when switching to smaller context models
+  compression_strategy: "summarize"  # "summarize" or "truncate"
+  
+  # Include conversation history in context preservation
+  include_conversation_history: true
+  
+  # Maximum conversation turns to preserve
+  max_conversation_turns: 10

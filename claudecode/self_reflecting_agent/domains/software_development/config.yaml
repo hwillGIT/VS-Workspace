@@ -1,0 +1,229 @@
+# Software Development Domain Agent Configuration
+
+agents:
+  # System Architecture Agents
+  architect:
+    model: "gpt-4o"
+    max_tokens: 8000
+    temperature: 0.1
+    enable_dspy: true
+    specializations:
+      - "system_design"
+      - "scalability_analysis"
+      - "architecture_patterns"
+      - "technical_debt_assessment"
+      - "microservices_design"
+      - "distributed_systems"
+    tools:
+      - "architecture_diagrams"
+      - "dependency_analysis"
+      - "scalability_modeling"
+      
+  security_auditor:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.05
+    enable_dspy: true
+    specializations:
+      - "vulnerability_assessment"
+      - "secure_coding_practices"
+      - "compliance_analysis"
+      - "threat_modeling"
+      - "penetration_testing"
+      - "security_architecture"
+    tools:
+      - "static_analysis"
+      - "vulnerability_scanning"
+      - "security_checklist"
+      
+  performance_auditor:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.1
+    enable_dspy: true
+    specializations:
+      - "performance_profiling"
+      - "optimization_recommendations"
+      - "resource_usage_analysis"
+      - "bottleneck_identification"
+      - "load_testing"
+      - "memory_optimization"
+    tools:
+      - "profiling_tools"
+      - "benchmarking"
+      - "performance_metrics"
+      
+  # Code Quality Agents
+  design_patterns_expert:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.2
+    enable_dspy: true
+    specializations:
+      - "pattern_identification"
+      - "pattern_recommendations"
+      - "refactoring_guidance"
+      - "anti_pattern_detection"
+      - "creational_patterns"
+      - "structural_patterns"
+      - "behavioral_patterns"
+    tools:
+      - "pattern_library"
+      - "refactoring_tools"
+      - "code_analysis"
+      
+  solid_principles_expert:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.1
+    enable_dspy: true
+    specializations:
+      - "single_responsibility"
+      - "open_closed_principle"
+      - "liskov_substitution"
+      - "interface_segregation"
+      - "dependency_inversion"
+      - "clean_architecture"
+    tools:
+      - "solid_analysis"
+      - "coupling_metrics"
+      - "cohesion_analysis"
+      
+  documentation_agent:
+    model: "gpt-4o"
+    max_tokens: 8000
+    temperature: 0.2
+    enable_dspy: true
+    specializations:
+      - "api_documentation"
+      - "code_comments"
+      - "architectural_docs"
+      - "user_guides"
+      - "technical_specifications"
+      - "readme_generation"
+    tools:
+      - "doc_generators"
+      - "markdown_tools"
+      - "diagram_tools"
+      
+  # Analysis Agents  
+  dependency_analyzer:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.1
+    enable_dspy: true
+    specializations:
+      - "circular_dependencies"
+      - "unused_dependencies"
+      - "dependency_graph_analysis"
+      - "version_compatibility"
+      - "security_vulnerabilities"
+      - "license_compliance"
+    tools:
+      - "dependency_scanners"
+      - "graph_visualization"
+      - "vulnerability_databases"
+      
+  technical_analyst:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.2
+    enable_dspy: true
+    specializations:
+      - "code_metrics"
+      - "complexity_analysis"
+      - "maintainability_assessment"
+      - "technical_debt_quantification"
+      - "code_coverage_analysis"
+      - "quality_scoring"
+    tools:
+      - "static_analyzers"
+      - "complexity_calculators"
+      - "quality_metrics"
+      
+  # Planning and Migration Agents
+  migration_planner:
+    model: "gpt-4o"
+    max_tokens: 8000
+    temperature: 0.2
+    enable_dspy: true
+    specializations:
+      - "migration_strategies"
+      - "backward_compatibility"
+      - "rollback_planning"
+      - "risk_assessment"
+      - "phased_migration"
+      - "data_migration"
+    tools:
+      - "migration_frameworks"
+      - "compatibility_checkers"
+      - "rollback_automation"
+
+# Domain-specific workflows
+workflows:
+  architecture_review:
+    agents: ["architect", "security_auditor", "performance_auditor"]
+    sequence: "parallel"
+    aggregation: "consensus"
+    
+  code_quality_audit:
+    agents: ["design_patterns_expert", "solid_principles_expert", "technical_analyst"]
+    sequence: "sequential"
+    aggregation: "comprehensive"
+    
+  system_analysis:
+    agents: ["dependency_analyzer", "technical_analyst", "security_auditor"]
+    sequence: "parallel"
+    aggregation: "report"
+    
+  migration_planning:
+    agents: ["migration_planner", "architect", "dependency_analyzer"]
+    sequence: "sequential"
+    aggregation: "plan"
+    
+  # Multi-Perspective Planning Workflows
+  comprehensive_project_planning:
+    type: "multi_perspective"
+    perspectives: ["architecture", "security", "performance", "code_quality", "devops"]
+    synthesis_strategy: "consensus_weighted"
+    conflict_resolution: "expert_priority"
+    validation_required: true
+    
+  web_application_planning:
+    type: "multi_perspective"
+    perspectives: ["architecture", "security", "performance", "devops"]
+    synthesis_strategy: "user_centric_balanced"
+    conflict_resolution: "user_experience_first"
+    template: "web_application"
+    
+  microservices_planning:
+    type: "multi_perspective"
+    perspectives: ["architecture", "security", "performance", "devops"]
+    synthesis_strategy: "distributed_systems_focused"
+    conflict_resolution: "scalability_priority"
+    template: "microservices"
+
+# Domain-specific evaluation criteria
+evaluation:
+  architecture_quality:
+    criteria:
+      - "scalability"
+      - "maintainability"
+      - "performance"
+      - "security"
+      - "testability"
+      
+  code_quality:
+    criteria:
+      - "readability"
+      - "complexity"
+      - "cohesion"
+      - "coupling"
+      - "documentation"
+      
+  security_assessment:
+    criteria:
+      - "vulnerability_count"
+      - "security_practices"
+      - "compliance_level"
+      - "threat_coverage"

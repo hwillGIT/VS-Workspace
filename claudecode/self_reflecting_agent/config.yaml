@@ -1,0 +1,134 @@
+# Self-Reflecting Agent Configuration
+
+# Agent Configuration - Core System Agents
+agents:
+  # Core Multi-Purpose Agents
+  manager:
+    model: "gpt-4o"
+    max_tokens: 4000
+    temperature: 0.1
+    enable_dspy: true
+    
+  coder:
+    model: "gpt-4o"
+    max_tokens: 8000
+    temperature: 0.2
+    enable_dspy: true
+    
+  reviewer:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.1
+    enable_dspy: true
+    
+  researcher:
+    model: "gpt-4o"
+    max_tokens: 6000
+    temperature: 0.3
+    enable_dspy: true
+
+# Domain-Specific Agent Configurations
+domain_agents:
+  software_development:
+    enabled: true
+    config_path: "domains/software_development/config.yaml"
+    agents_path: "domains/software_development/agents"
+    
+  financial_trading:
+    enabled: false  # Optional domain
+    config_path: "domains/financial_trading/config.yaml" 
+    agents_path: "domains/financial_trading/agents"
+    
+  data_science:
+    enabled: false  # Optional domain
+    config_path: "domains/data_science/config.yaml"
+    agents_path: "domains/data_science/agents"
+    
+  devops:
+    enabled: false  # Optional domain  
+    config_path: "domains/devops/config.yaml"
+    agents_path: "domains/devops/agents"
+
+# Workflow Configuration
+workflows:
+  development:
+    max_iterations: 10
+    enable_parallel_execution: true
+    timeout_seconds: 300
+    
+  self_improvement:
+    evaluation_frequency: 5
+    improvement_threshold: 0.8
+    max_improvement_iterations: 3
+
+# Memory Configuration
+memory:
+  enabled: true
+  provider: "mem0"
+  vector_store:
+    provider: "chroma"
+    collection_name: "agent_memory"
+    embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  graph_store:
+    provider: "neo4j"
+    uri: "bolt://localhost:7687"
+    username: "neo4j"
+    password: "password"
+
+# RAG Configuration
+rag:
+  enabled: true
+  hybrid:
+    bm25_weight: 0.3
+    vector_weight: 0.7
+    fusion_method: "reciprocal_rank"
+  vector_store:
+    provider: "faiss" 
+    embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+    dimensions: 384
+  search:
+    max_results: 10
+    similarity_threshold: 0.7
+
+# Context Engineering
+context:
+  max_context_length: 32000
+  context_overlap: 500
+  compression_enabled: true
+  summary_model: "gpt-4o-mini"
+  poisoning_detection: true
+
+# Observability
+observability:
+  mlflow:
+    enabled: true
+    tracking_uri: "http://localhost:5000"
+    experiment_name: "self_reflecting_agent"
+  metrics:
+    enabled: true
+    prometheus_port: 8000
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Evaluation
+evaluation:
+  llm_as_judge:
+    enabled: true
+    judge_model: "gpt-4o"
+    evaluation_criteria:
+      - "code_quality"
+      - "functionality"
+      - "maintainability" 
+      - "performance"
+      - "security"
+  automated_testing:
+    enabled: true
+    test_frameworks: ["pytest", "unittest"]
+    coverage_threshold: 0.8
+
+# Integration
+parallel_planning:
+  enabled: true
+  templates_path: "../parallel_planning/templates"
+  tools_path: "../parallel_planning/tools"
