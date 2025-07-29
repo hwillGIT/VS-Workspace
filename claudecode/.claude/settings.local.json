@@ -22,7 +22,14 @@
       "Bash(rm:*)",
       "Bash(mkdir:*)",
       "Bash(git clone:*)",
-      "Bash(git filter-branch:*)"
+      "Bash(git filter-branch:*)",
+      "Bash(git rev-list:*)",
+      "Bash(git branch:*)",
+      "Bash(where java)",
+      "Bash(java:*)",
+      "Bash(curl:*)",
+      "Bash(git gc:*)",
+      "WebFetch(domain:docs.anthropic.com)"
     ],
     "deny": []
   }
