@@ -1,0 +1,20 @@
+{
+  "summary": {
+    "total_files": 207,
+    "total_modules": 204,
+    "circular_cycles": 0,
+    "critical_cycles": 0,
+    "high_priority_cycles": 0
+  },
+  "cycles": [],
+  "recommendations": [],
+  "discussions": [],
+  "graph_metrics": {
+    "total_nodes": 204,
+    "total_edges": 176,
+    "density": 0.0042499758524099296,
+    "strongly_connected_components": 204,
+    "average_in_degree": 0.8627450980392157,
+    "average_out_degree": 0.8627450980392157
+  }
+}
