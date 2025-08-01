@@ -97,16 +97,23 @@ This document provides comprehensive guidelines for both human developers and AI
 
 ### During Development
 
-1. **Follow Smart Iterative Cycle**
+1. **Architecture-Aware Smart Iterative Cycle**
    ```
-   1. Think (5 min) - Plan the micro-step
+   0. Architecture Context (30 sec) - Which layer/pattern/persona applies?
+   1. Think (5 min) - Plan the micro-step with architectural awareness
    2. Test (Red) - Write a failing test
    3. Code (Green) - Write minimal code to pass
    4. Refactor - Improve clarity if needed
-   5. Commit - Save progress immediately
-   6. Learn - Document any insights
+   5. Commit - Save progress with architectural context
+   6. Learn - Document insights and architectural impact
    7. Repeat - Next micro-iteration
    ```
+
+   **Architecture Context Questions**:
+   - What architectural layer am I working in?
+   - What established patterns should I follow?
+   - What could go wrong architecturally?
+   - Which architecture persona applies? (Risk Mitigator/Complexity Orchestrator/Multi-Perspective Communicator/Continuous Steward)
 
 2. **Micro-Commit Practice**
    - Commit after EVERY passing test
@@ -122,15 +129,26 @@ This document provides comprehensive guidelines for both human developers and AI
    - Type checking in real-time
    - Performance impact warnings
 
-4. **Capture Learnings Immediately**
+4. **Capture Learnings with Architectural Context**
    ```bash
    # When you discover something:
-   git commit -m "fix: handle edge case [LEARNING]
+   git commit -m "fix: handle edge case [LEARNING] [ARCH-CONTEXT]
    
+   ARCHITECTURAL CONTEXT:
+   Layer: Application/Validation
+   Persona: Risk Mitigator (preventing edge case failures)
+   Pattern: Input validation pipeline
+   
+   DISCOVERY:
    Discovered that user emails can contain '+' characters.
-   Previous regex was too restrictive.
+   Previous regex was too restrictive for real-world usage.
    
-   Rollback: Safe to revert if email validation becomes too permissive"
+   ARCHITECTURAL IMPACT:
+   ✓ Improved validation robustness
+   ✓ No pattern boundaries violated
+   ⚠ Need to validate with other email-dependent systems
+   
+   Rollback: Safe to revert if validation becomes too permissive"
    ```
 
 ### After Implementation
