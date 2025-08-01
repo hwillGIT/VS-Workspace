@@ -41,6 +41,8 @@ class ModelProvider(Enum):
     ANTHROPIC = "anthropic"
     OPENAI = "openai"
     GOOGLE = "google"
+    OPENROUTER = "openrouter"
+    GROQ = "groq"
     LOCAL = "local"
 
 
@@ -152,8 +154,17 @@ class ModelAvailabilityChecker:
     async def _perform_availability_check(self, model_config: ModelConfig) -> bool:
         """Perform the actual availability check."""
         
-        # Check if API key is available
-        api_key = os.getenv(model_config.api_key_env)
+        # Try to get API key through multi-key manager first
+        try:
+            from .multi_key_manager import get_api_key
+            api_key = await get_api_key(model_config.provider)
+            if not api_key:
+                # Fallback to direct environment check
+                api_key = os.getenv(model_config.api_key_env)
+        except ImportError:
+            # Fallback to direct environment check if multi-key manager not available
+            api_key = os.getenv(model_config.api_key_env)
+        
         if not api_key:
             return False
         
@@ -164,6 +175,10 @@ class ModelAvailabilityChecker:
             return await self._check_openai_availability(model_config, api_key)
         elif model_config.provider == ModelProvider.GOOGLE:
             return await self._check_google_availability(model_config, api_key)
+        elif model_config.provider == ModelProvider.OPENROUTER:
+            return await self._check_openrouter_availability(model_config, api_key)
+        elif model_config.provider == ModelProvider.GROQ:
+            return await self._check_groq_availability(model_config, api_key)
         else:
             return True  # Assume local models are available
     
@@ -234,6 +249,96 @@ class ModelAvailabilityChecker:
             
         except Exception as e:
             self.logger.debug(f"Google availability check failed: {e}")
+            return False
+    
+    async def _check_openrouter_availability(self, config: ModelConfig, api_key: str) -> bool:
+        """Check OpenRouter availability."""
+        try:
+            import aiohttp
+            
+            base_url = config.base_url or "https://openrouter.ai/api/v1"
+            
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "X-Title": "Self-Reflecting Agent"
+            }
+            
+            data = {
+                "model": config.name,
+                "messages": [{"role": "user", "content": "Hi"}],
+                "max_tokens": 10
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{base_url}/chat/completions",
+                    headers=headers,
+                    json=data,
+                    timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
+                    if response.status == 200:
+                        return True
+                    elif response.status == 401:
+                        self.logger.error(f"OpenRouter authentication failed for {config.name}")
+                        return False
+                    elif response.status == 429:
+                        self.logger.warning(f"OpenRouter rate limit hit for {config.name}")
+                        return False
+                    else:
+                        self.logger.debug(f"OpenRouter availability check failed with status {response.status}")
+                        return False
+            
+        except ImportError:
+            self.logger.warning("aiohttp not available for OpenRouter checks")
+            return True  # Assume available if we can't check
+        except Exception as e:
+            self.logger.debug(f"OpenRouter availability check failed: {e}")
+            return False
+    
+    async def _check_groq_availability(self, config: ModelConfig, api_key: str) -> bool:
+        """Check Groq availability."""
+        try:
+            import aiohttp
+            
+            base_url = config.base_url or "https://api.groq.com/openai/v1"
+            
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            data = {
+                "model": config.name,
+                "messages": [{"role": "user", "content": "Hi"}],
+                "max_tokens": 10,
+                "temperature": 0.1
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{base_url}/chat/completions",
+                    headers=headers,
+                    json=data,
+                    timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
+                    if response.status == 200:
+                        return True
+                    elif response.status == 401:
+                        self.logger.error(f"Groq authentication failed for {config.name}")
+                        return False
+                    elif response.status == 429:
+                        self.logger.warning(f"Groq rate limit hit for {config.name}")
+                        return False
+                    else:
+                        self.logger.debug(f"Groq availability check failed with status {response.status}")
+                        return False
+            
+        except ImportError:
+            self.logger.warning("aiohttp not available for Groq checks")
+            return True  # Assume available if we can't check
+        except Exception as e:
+            self.logger.debug(f"Groq availability check failed: {e}")
             return False
 
 
@@ -490,17 +595,98 @@ class ModelRouter:
                     },
                     'priority': 7,
                     'enabled': True
+                },
+                'anthropic/claude-3-5-sonnet': {
+                    'provider': 'openrouter',
+                    'api_key_env': 'OPENROUTER_API_KEY',
+                    'base_url': 'https://openrouter.ai/api/v1',
+                    'capabilities': {
+                        'context_length': 200000,
+                        'supports_code': True,
+                        'supports_reasoning': True,
+                        'supports_vision': True,
+                        'supports_function_calling': True,
+                        'cost_per_1k_tokens': 0.003,
+                        'quality_score': 0.95
+                    },
+                    'priority': 9,
+                    'enabled': True
+                },
+                'openai/gpt-4o': {
+                    'provider': 'openrouter',
+                    'api_key_env': 'OPENROUTER_API_KEY',
+                    'base_url': 'https://openrouter.ai/api/v1',
+                    'capabilities': {
+                        'context_length': 128000,
+                        'supports_code': True,
+                        'supports_reasoning': True,
+                        'supports_vision': True,
+                        'supports_function_calling': True,
+                        'cost_per_1k_tokens': 0.005,
+                        'quality_score': 0.92
+                    },
+                    'priority': 8,
+                    'enabled': True
+                },
+                'google/gemini-pro-1.5': {
+                    'provider': 'openrouter',
+                    'api_key_env': 'OPENROUTER_API_KEY',
+                    'base_url': 'https://openrouter.ai/api/v1',
+                    'capabilities': {
+                        'context_length': 2000000,
+                        'supports_code': True,
+                        'supports_reasoning': True,
+                        'supports_vision': True,
+                        'supports_function_calling': True,
+                        'cost_per_1k_tokens': 0.00125,
+                        'quality_score': 0.90
+                    },
+                    'priority': 6,
+                    'enabled': True
+                },
+                'meta-llama/llama-3.1-405b-instruct': {
+                    'provider': 'openrouter',
+                    'api_key_env': 'OPENROUTER_API_KEY',
+                    'base_url': 'https://openrouter.ai/api/v1',
+                    'capabilities': {
+                        'context_length': 131072,
+                        'supports_code': True,
+                        'supports_reasoning': True,
+                        'supports_vision': False,
+                        'supports_function_calling': True,
+                        'cost_per_1k_tokens': 0.009,
+                        'quality_score': 0.91
+                    },
+                    'priority': 7,
+                    'enabled': True
+                },
+                'anthropic/claude-3-haiku': {
+                    'provider': 'openrouter',
+                    'api_key_env': 'OPENROUTER_API_KEY',
+                    'base_url': 'https://openrouter.ai/api/v1',
+                    'capabilities': {
+                        'context_length': 200000,
+                        'supports_code': True,
+                        'supports_reasoning': True,
+                        'supports_vision': False,
+                        'supports_function_calling': True,
+                        'cost_per_1k_tokens': 0.00025,
+                        'quality_score': 0.85
+                    },
+                    'priority': 4,
+                    'enabled': True
                 }
             },
             'routing_rules': {
-                'orchestration': ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-2.0-flash-exp'],
-                'code_generation': ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-2.0-flash-exp'],
-                'debugging': ['gemini-2.0-flash-exp', 'claude-3-5-sonnet-20241022', 'gpt-4o'],
-                'code_review': ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-2.0-flash-exp'],
-                'architecture': ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-2.0-flash-exp'],
-                'documentation': ['claude-haiku-20240307', 'gpt-4o-mini', 'gemini-2.0-flash-exp'],
-                'testing': ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-2.0-flash-exp'],
-                'conversation': ['claude-haiku-20240307', 'gpt-4o-mini', 'gemini-2.0-flash-exp']
+                'orchestration': ['anthropic/claude-3-5-sonnet', 'claude-3-5-sonnet-20241022', 'meta-llama/llama-3.1-405b-instruct', 'gpt-4o'],
+                'code_generation': ['anthropic/claude-3-5-sonnet', 'claude-3-5-sonnet-20241022', 'openai/gpt-4o', 'gpt-4o'],
+                'debugging': ['google/gemini-pro-1.5', 'gemini-2.0-flash-exp', 'anthropic/claude-3-5-sonnet', 'claude-3-5-sonnet-20241022'],
+                'code_review': ['anthropic/claude-3-5-sonnet', 'claude-3-5-sonnet-20241022', 'openai/gpt-4o', 'gpt-4o'],
+                'architecture': ['anthropic/claude-3-5-sonnet', 'meta-llama/llama-3.1-405b-instruct', 'claude-3-5-sonnet-20241022', 'gpt-4o'],
+                'documentation': ['anthropic/claude-3-haiku', 'claude-haiku-20240307', 'gpt-4o-mini', 'gemini-2.0-flash-exp'],
+                'testing': ['anthropic/claude-3-5-sonnet', 'claude-3-5-sonnet-20241022', 'openai/gpt-4o', 'gpt-4o'],
+                'reasoning': ['meta-llama/llama-3.1-405b-instruct', 'anthropic/claude-3-5-sonnet', 'google/gemini-pro-1.5'],
+                'conversation': ['anthropic/claude-3-haiku', 'claude-haiku-20240307', 'gpt-4o-mini', 'gemini-2.0-flash-exp']
             }
         }
     
@@ -711,9 +897,13 @@ class ModelRouter:
         if model_config.provider == ModelProvider.ANTHROPIC:
             reasons.append("Claude excels at thoughtful analysis and code quality")
         elif model_config.provider == ModelProvider.GOOGLE:
-            reasons.append("Gemini 2.5 Pro optimized for debugging and large contexts")
+            reasons.append("Gemini optimized for debugging and large contexts")
         elif model_config.provider == ModelProvider.OPENAI:
             reasons.append("GPT models provide reliable general performance")
+        elif model_config.provider == ModelProvider.OPENROUTER:
+            reasons.append("OpenRouter provides access to diverse model ecosystem")
+        elif model_config.provider == ModelProvider.GROQ:
+            reasons.append("Groq delivers ultra-fast inference speeds")
         
         # Capability highlights
         if model_config.capabilities.context_length > 100000:
@@ -744,6 +934,20 @@ class ModelRouter:
             self.performance_tracker.record_success(model_name, latency_ms, cost)
         else:
             self.performance_tracker.record_failure(model_name, error_reason or "Unknown error")
+        
+        # Also record with multi-key manager for failover logic
+        try:
+            from .multi_key_manager import record_api_result
+            model_config = self.models.get(model_name)
+            if model_config:
+                await record_api_result(
+                    provider=model_config.provider,
+                    success=success,
+                    error_type=error_reason,
+                    cost=cost
+                )
+        except ImportError:
+            pass  # Multi-key manager not available
     
     def get_model_status(self) -> Dict[str, Any]:
         """Get status information for all models."""

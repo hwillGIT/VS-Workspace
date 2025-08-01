@@ -67,24 +67,30 @@ class HybridRAG:
         
         try:
             # Initialize components in parallel
-            initialization_tasks = [
-                self.vector_store.initialize(),
-                self.bm25_search.initialize(),
-                self.document_processor.initialize()
-            ]
-            
-            results = await asyncio.gather(*initialization_tasks, return_exceptions=True)
-            
-            # Check for initialization failures
-            for i, result in enumerate(results):
-                if isinstance(result, Exception):
-                    component_names = ["vector_store", "bm25_search", "document_processor"]
-                    self.logger.error(f"Failed to initialize {component_names[i]}: {result}")
+            # Initialize components sequentially to isolate errors
+            try:
+                if not await self.vector_store.initialize():
+                    self.logger.error("Failed to initialize vector_store.")
                     return False
-                elif not result:
-                    component_names = ["vector_store", "bm25_search", "document_processor"]
-                    self.logger.error(f"Failed to initialize {component_names[i]}")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize vector_store: {e}")
+                return False
+
+            try:
+                if not await self.bm25_search.initialize():
+                    self.logger.error("Failed to initialize bm25_search.")
                     return False
+            except Exception as e:
+                self.logger.error(f"Failed to initialize bm25_search: {e}")
+                return False
+
+            try:
+                if not await self.document_processor.initialize():
+                    self.logger.error("Failed to initialize document_processor.")
+                    return False
+            except Exception as e:
+                self.logger.error(f"Failed to initialize document_processor: {e}")
+                return False
             
             self.logger.info("All RAG components initialized successfully")
             return True

@@ -64,6 +64,9 @@ class DocumentProcessor:
         self.extract_keywords = config.get("extract_keywords", True)
         self.extract_entities = config.get("extract_entities", False)
         
+        # Initialize tfidf_vectorizer to None
+        self.tfidf_vectorizer = None
+
         # Processing stats
         self.processing_stats = {
             "total_documents": 0,
@@ -126,7 +129,6 @@ class DocumentProcessor:
                 ngram_range=(1, 2)
             )
         except ImportError:
-            # Fallback to simple frequency-based extraction
             self.logger.warning("sklearn not available, using simple keyword extraction")
             self.tfidf_vectorizer = None
     
@@ -292,11 +294,11 @@ class DocumentProcessor:
         emails = self.patterns["email"].findall(content)
         
         if urls:
-            metadata["urls"] = urls[:10]  # Limit to first 10
+            metadata["urls"] = ", ".join(urls[:10])  # Convert list to string
             metadata["url_count"] = len(urls)
         
         if emails:
-            metadata["emails"] = emails[:5]  # Limit to first 5
+            metadata["emails"] = ", ".join(emails[:5])  # Convert list to string
             metadata["email_count"] = len(emails)
         
         # Code block detection
@@ -308,7 +310,7 @@ class DocumentProcessor:
         # Extract keywords
         if self.extract_keywords:
             keywords = await self._extract_keywords(content)
-            metadata["keywords"] = keywords
+            metadata["keywords"] = ", ".join(keywords) # Convert list to string
         
         return metadata
     

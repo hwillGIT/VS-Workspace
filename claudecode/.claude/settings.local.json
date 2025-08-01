@@ -29,7 +29,16 @@
       "Bash(java:*)",
       "Bash(curl:*)",
       "Bash(git gc:*)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(dir:*)",
+      "Bash(context_workflow.bat trading_system work \"implementing WebSocket API for real-time data\")",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(pip install:*)",
+      "Bash(mv:*)",
+      "Bash(claude config get:*)",
+      "Bash(claude config list:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,385 @@
+{
+  "gemini debug anthropic messaging": [
+    {
+      "id": "9a4df30184ff82d90d00e6cfe9dded2a",
+      "content": "Software development best practices: Plan\u2192Code\u2192Review loop, automated testing,\n        security by default, explicit communication, continuous improvement.",
+      "metadata": {
+        "source": "parallel_agents_analysis",
+        "domain": "software_engineering",
+        "project": "claude_code_workspace",
+        "session_id": "75c7007369f7",
+        "type": "best_practice",
+        "word_count": 15,
+        "timestamp": "2025-07-31T09:00:13.108371",
+        "char_count": 155
+      },
+      "distance": 1.6858688592910767,
+      "level": "global"
+    },
+    {
+      "id": "84142df81fa0758c2851d295f8739cfd",
+      "content": "Log all order state changes for audit trail",
+      "metadata": {
+        "project": "trading_system",
+        "timestamp": "2025-07-28T23:52:55.372705",
+        "session_id": "447453817e25",
+        "char_count": 43,
+        "word_count": 8,
+        "category": "compliance",
+        "type": "best_practice"
+      },
+      "distance": 1.8129490613937378,
+      "level": "global"
+    },
+    {
+      "id": "46d0987567223ceb82181e0cc7394690",
+      "content": "Log all order state changes for audit trail",
+      "metadata": {
+        "char_count": 43,
+        "word_count": 8,
+        "session_id": "1e196f542100",
+        "type": "best_practice",
+        "timestamp": "2025-07-28T23:53:46.514132",
+        "category": "compliance",
+        "project": "trading_system"
+      },
+      "distance": 1.8129490613937378,
+      "level": "global"
+    },
+    {
+      "id": "0a51e2cb50b2dff8fea8f8ceea0a1406",
+      "content": "Implement circuit breakers for all external API calls",
+      "metadata": {
+        "word_count": 8,
+        "timestamp": "2025-07-28T23:52:55.332702",
+        "char_count": 53,
+        "category": "resilience",
+        "session_id": "447453817e25",
+        "project": "trading_system",
+        "type": "best_practice"
+      },
+      "distance": 1.8258767127990723,
+      "level": "global"
+    },
+    {
+      "id": "2b7b32ae5bda2ee668c5f5ef0e471eef",
+      "content": "Implement circuit breakers for all external API calls",
+      "metadata": {
+        "session_id": "1e196f542100",
+        "word_count": 8,
+        "project": "trading_system",
+        "category": "resilience",
+        "timestamp": "2025-07-28T23:53:46.470605",
+        "char_count": 53,
+        "type": "best_practice"
+      },
+      "distance": 1.8258767127990723,
+      "level": "global"
+    }
+  ],
+  "task tool subagent llm routing": [
+    {
+      "id": "9c421ff372b2814d1b83761e4a83e740",
+      "content": "The project uses Python with asyncio for handling concurrent operations",
+      "metadata": {
+        "timestamp": "2025-07-28T23:38:02.784974",
+        "word_count": 10,
+        "project": "default",
+        "char_count": 71,
+        "category": "technical_choice",
+        "session_id": "d29c1742d654"
+      },
+      "distance": 1.7658395767211914,
+      "level": "session"
+    },
+    {
+      "id": "9a4df30184ff82d90d00e6cfe9dded2a",
+      "content": "Software development best practices: Plan\u2192Code\u2192Review loop, automated testing,\n        security by default, explicit communication, continuous improvement.",
+      "metadata": {
+        "word_count": 15,
+        "type": "best_practice",
+        "project": "claude_code_workspace",
+        "domain": "software_engineering",
+        "timestamp": "2025-07-31T09:00:13.108371",
+        "source": "parallel_agents_analysis",
+        "session_id": "75c7007369f7",
+        "char_count": 155
+      },
+      "distance": 1.7994437217712402,
+      "level": "global"
+    },
+    {
+      "id": "8170d38edae55467e422ebf6f674b892",
+      "content": "UI Design principles: Gestalt principles (proximity, similarity, continuation, closure,\n        figure/ground, common fate) form the foundation of all layout decisions.",
+      "metadata": {
+        "project": "claude_code_workspace",
+        "session_id": "75c7007369f7",
+        "type": "design_principle",
+        "timestamp": "2025-07-31T09:00:13.293261",
+        "domain": "ui_ux",
+        "word_count": 19,
+        "framework": "gestalt",
+        "char_count": 168
+      },
+      "distance": 1.8236780166625977,
+      "level": "global"
+    },
+    {
+      "id": "0a51e2cb50b2dff8fea8f8ceea0a1406",
+      "content": "Implement circuit breakers for all external API calls",
+      "metadata": {
+        "char_count": 53,
+        "project": "trading_system",
+        "word_count": 8,
+        "session_id": "447453817e25",
+        "category": "resilience",
+        "timestamp": "2025-07-28T23:52:55.332702",
+        "type": "best_practice"
+      },
+      "distance": 1.8447165489196777,
+      "level": "global"
+    },
+    {
+      "id": "2b7b32ae5bda2ee668c5f5ef0e471eef",
+      "content": "Implement circuit breakers for all external API calls",
+      "metadata": {
+        "category": "resilience",
+        "project": "trading_system",
+        "session_id": "1e196f542100",
+        "char_count": 53,
+        "word_count": 8,
+        "type": "best_practice",
+        "timestamp": "2025-07-28T23:53:46.470605"
+      },
+      "distance": 1.8447165489196777,
+      "level": "global"
+    }
+  ],
+  "gemini to anthropic communication": [
+    {
+      "id": "3df0bc69d6f58ba27f3901fc97634988",
+      "content": "User wants to implement a trading system with real-time data feeds",
+      "metadata": {
+        "session_id": "d29c1742d654",
+        "word_count": 11,
+        "char_count": 66,
+        "project": "default",
+        "timestamp": "2025-07-28T23:38:02.099469"
+      },
+      "distance": 1.7690788507461548,
+      "level": "immediate"
+    },
+    {
+      "id": "9c421ff372b2814d1b83761e4a83e740",
+      "content": "The project uses Python with asyncio for handling concurrent operations",
+      "metadata": {
+        "timestamp": "2025-07-28T23:38:02.784974",
+        "category": "technical_choice",
+        "session_id": "d29c1742d654",
+        "word_count": 10,
+        "char_count": 71,
+        "project": "default"
+      },
+      "distance": 1.8702963590621948,
+      "level": "session"
+    },
+    {
+      "id": "9a4df30184ff82d90d00e6cfe9dded2a",
+      "content": "Software development best practices: Plan\u2192Code\u2192Review loop, automated testing,\n        security by default, explicit communication, continuous improvement.",
+      "metadata": {
+        "timestamp": "2025-07-31T09:00:13.108371",
+        "word_count": 15,
+        "session_id": "75c7007369f7",
+        "source": "parallel_agents_analysis",
+        "type": "best_practice",
+        "char_count": 155,
+        "domain": "software_engineering",
+        "project": "claude_code_workspace"
+      },
+      "distance": 1.9133950471878052,
+      "level": "global"
+    },
+    {
+      "id": "bb01ec0360dd8a85a1053b32ade68b1c",
+      "content": "Always use type hints in Python code for better maintainability",
+      "metadata": {
+        "char_count": 63,
+        "project": "default",
+        "timestamp": "2025-07-28T23:38:03.263380",
+        "session_id": "d29c1742d654",
+        "word_count": 10,
+        "type": "coding_standard"
+      },
+      "distance": 1.9308834075927734,
+      "level": "project"
+    },
+    {
+      "id": "8170d38edae55467e422ebf6f674b892",
+      "content": "UI Design principles: Gestalt principles (proximity, similarity, continuation, closure,\n        figure/ground, common fate) form the foundation of all layout decisions.",
+      "metadata": {
+        "session_id": "75c7007369f7",
+        "word_count": 19,
+        "char_count": 168,
+        "domain": "ui_ux",
+        "project": "claude_code_workspace",
+        "timestamp": "2025-07-31T09:00:13.293261",
+        "framework": "gestalt",
+        "type": "design_principle"
+      },
+      "distance": 1.9554781913757324,
+      "level": "global"
+    }
+  ],
+  "debug messaging system": [
+    {
+      "id": "9a4df30184ff82d90d00e6cfe9dded2a",
+      "content": "Software development best practices: Plan\u2192Code\u2192Review loop, automated testing,\n        security by default, explicit communication, continuous improvement.",
+      "metadata": {
+        "project": "claude_code_workspace",
+        "domain": "software_engineering",
+        "timestamp": "2025-07-31T09:00:13.108371",
+        "char_count": 155,
+        "type": "best_practice",
+        "word_count": 15,
+        "source": "parallel_agents_analysis",
+        "session_id": "75c7007369f7"
+      },
+      "distance": 1.4783964157104492,
+      "level": "global"
+    },
+    {
+      "id": "84142df81fa0758c2851d295f8739cfd",
+      "content": "Log all order state changes for audit trail",
+      "metadata": {
+        "category": "compliance",
+        "timestamp": "2025-07-28T23:52:55.372705",
+        "project": "trading_system",
+        "char_count": 43,
+        "word_count": 8,
+        "session_id": "447453817e25",
+        "type": "best_practice"
+      },
+      "distance": 1.650977611541748,
+      "level": "global"
+    },
+    {
+      "id": "46d0987567223ceb82181e0cc7394690",
+      "content": "Log all order state changes for audit trail",
+      "metadata": {
+        "timestamp": "2025-07-28T23:53:46.514132",
+        "word_count": 8,
+        "session_id": "1e196f542100",
+        "project": "trading_system",
+        "type": "best_practice",
+        "category": "compliance",
+        "char_count": 43
+      },
+      "distance": 1.650977611541748,
+      "level": "global"
+    },
+    {
+      "id": "9c421ff372b2814d1b83761e4a83e740",
+      "content": "The project uses Python with asyncio for handling concurrent operations",
+      "metadata": {
+        "session_id": "d29c1742d654",
+        "project": "default",
+        "char_count": 71,
+        "timestamp": "2025-07-28T23:38:02.784974",
+        "word_count": 10,
+        "category": "technical_choice"
+      },
+      "distance": 1.6562941074371338,
+      "level": "session"
+    },
+    {
+      "id": "3df0bc69d6f58ba27f3901fc97634988",
+      "content": "User wants to implement a trading system with real-time data feeds",
+      "metadata": {
+        "session_id": "d29c1742d654",
+        "char_count": 66,
+        "timestamp": "2025-07-28T23:38:02.099469",
+        "project": "default",
+        "word_count": 11
+      },
+      "distance": 1.6747584342956543,
+      "level": "immediate"
+    }
+  ],
+  "cross llm integration": [
+    {
+      "id": "0a51e2cb50b2dff8fea8f8ceea0a1406",
+      "content": "Implement circuit breakers for all external API calls",
+      "metadata": {
+        "session_id": "447453817e25",
+        "timestamp": "2025-07-28T23:52:55.332702",
+        "word_count": 8,
+        "type": "best_practice",
+        "project": "trading_system",
+        "category": "resilience",
+        "char_count": 53
+      },
+      "distance": 1.8251734972000122,
+      "level": "global"
+    },
+    {
+      "id": "2b7b32ae5bda2ee668c5f5ef0e471eef",
+      "content": "Implement circuit breakers for all external API calls",
+      "metadata": {
+        "timestamp": "2025-07-28T23:53:46.470605",
+        "type": "best_practice",
+        "session_id": "1e196f542100",
+        "char_count": 53,
+        "project": "trading_system",
+        "category": "resilience",
+        "word_count": 8
+      },
+      "distance": 1.8251734972000122,
+      "level": "global"
+    },
+    {
+      "id": "84142df81fa0758c2851d295f8739cfd",
+      "content": "Log all order state changes for audit trail",
+      "metadata": {
+        "session_id": "447453817e25",
+        "char_count": 43,
+        "word_count": 8,
+        "project": "trading_system",
+        "type": "best_practice",
+        "category": "compliance",
+        "timestamp": "2025-07-28T23:52:55.372705"
+      },
+      "distance": 1.8576734066009521,
+      "level": "global"
+    },
+    {
+      "id": "46d0987567223ceb82181e0cc7394690",
+      "content": "Log all order state changes for audit trail",
+      "metadata": {
+        "category": "compliance",
+        "project": "trading_system",
+        "char_count": 43,
+        "type": "best_practice",
+        "timestamp": "2025-07-28T23:53:46.514132",
+        "session_id": "1e196f542100",
+        "word_count": 8
+      },
+      "distance": 1.8576734066009521,
+      "level": "global"
+    },
+    {
+      "id": "568415e1b21e66fb085089b505308268",
+      "content": "Security by design: validate all inputs, use parameterized queries, implement rate limiting",
+      "metadata": {
+        "domain": "security",
+        "timestamp": "2025-07-28T23:38:03.759004",
+        "session_id": "d29c1742d654",
+        "char_count": 91,
+        "project": "default",
+        "word_count": 12,
+        "type": "best_practice"
+      },
+      "distance": 1.931467890739441,
+      "level": "global"
+    }
+  ]
+}

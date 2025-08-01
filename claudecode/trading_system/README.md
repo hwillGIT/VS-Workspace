@@ -200,6 +200,27 @@ The system provides structured recommendations:
 }
 ```
 
+## Documentation
+
+### Architecture Documentation
+- **[Architecture Decision Records (ADRs)](./docs/adrs/README.md)** - Key architectural decisions and rationale
+- **[Complete System Overview](./COMPLETE_SYSTEM_OVERVIEW.md)** - Detailed system architecture
+- **[Implementation Summary](./IMPLEMENTATION_SUMMARY.md)** - Current implementation status
+- **[Coding Standards](./CODING_STANDARDS.md)** - Development guidelines
+
+### Recent Architectural Changes
+- **[ADR-001: Functional Programming Integration](./docs/adrs/ADR-001-functional-programming-integration.md)** - Enhanced reliability through functional programming patterns
+
+### System Architect Tools
+The system includes comprehensive architecture analysis tools:
+- **ADR Management**: Create and track architectural decisions
+- **Dependency Analysis**: Analyze system dependencies and coupling
+- **Performance Auditing**: Monitor system performance and bottlenecks
+- **Security Auditing**: Automated security analysis
+- **Documentation Generation**: Automated documentation updates
+
+See [System Architect Suite](./agents/system_architect/README.md) for details.
+
 ## API Documentation
 
 ### Core APIs

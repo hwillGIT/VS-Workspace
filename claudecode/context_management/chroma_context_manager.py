@@ -117,7 +117,9 @@ class ChromaContextManager:
                 logger.info(f"Initialized collection: {collection_name}")
             except Exception as e:
                 logger.error(f"Error initializing collection {collection_name}: {e}")
-                raise
+                import traceback
+                traceback.print_exc()
+                self.collections[level] = None # Explicitly set to None on failure
     
     def _generate_session_id(self) -> str:
         """Generate unique session ID"""

@@ -33,9 +33,17 @@ def check_api_keys():
                     key, value = line.strip().split('=', 1)
                     os.environ[key] = value
     
-    google_key = os.getenv('GOOGLE_API_KEY')
-    anthropic_key = os.getenv('ANTHROPIC_API_KEY') 
-    openai_key = os.getenv('OPENAI_API_KEY')
+    # Use global API key manager for multi-key failover support
+    try:
+        from global_api_keys import get_api_key_sync
+        google_key = get_api_key_sync('GOOGLE_API_KEY')
+        anthropic_key = get_api_key_sync('ANTHROPIC_API_KEY') 
+        openai_key = get_api_key_sync('OPENAI_API_KEY')
+    except ImportError:
+        # Fallback to direct access if global manager not available
+        google_key = os.getenv('GOOGLE_API_KEY')
+        anthropic_key = os.getenv('ANTHROPIC_API_KEY') 
+        openai_key = os.getenv('OPENAI_API_KEY')
     
     print("API Key Status:")
     print("=" * 30)

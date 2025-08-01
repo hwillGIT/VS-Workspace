@@ -257,8 +257,8 @@ class GlobalAgentManager:
             self.projects_db['projects'][project_hash] = {
                 'path': str(Path(project_path).resolve()),
                 'type': project_type,
-                'created_at': str(Path().ctime()) if Path(project_path).exists() else None,
-                'last_accessed': str(Path().stat().st_atime) if Path(project_path).exists() else None,
+                'created_at': str(Path(project_path).stat().st_ctime) if Path(project_path).exists() else None,
+                'last_accessed': str(Path(project_path).stat().st_atime) if Path(project_path).exists() else None,
                 'has_claude_md': claude_config is not None,
                 'technologies': claude_config.get('technologies', []) if claude_config else []
             }

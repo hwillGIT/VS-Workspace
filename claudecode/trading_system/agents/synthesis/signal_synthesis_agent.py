@@ -25,6 +25,17 @@ from ...core.base.agent import BaseAgent, AgentOutput
 from ...core.base.exceptions import ValidationError, DataError
 from ...core.utils.data_validation import DataValidator
 from ...core.utils.math_utils import MathUtils
+from .functional_signal_processor import (
+    FunctionalSignalProcessor, Signal, ConsensusResult, 
+    process_signals, validate_signal_quality
+)
+
+# Import functional programming utilities
+try:
+    from ....functional_utils import Maybe, Either, FunctionalList, fl, fmap, ffilter
+    FUNCTIONAL_AVAILABLE = True
+except ImportError:
+    FUNCTIONAL_AVAILABLE = False
 
 
 class ConsensusValidator:
@@ -775,3 +786,338 @@ class SignalSynthesisAgent(BaseAgent):
             },
             "timestamp": datetime.utcnow()
         }
+    
+    # ============================================================================
+    # Functional Programming Enhanced Methods
+    # ============================================================================
+    
+    def _functional_signal_processing(self, strategy_signals: Dict[str, Any],
+                                    regime_analysis: Dict[str, Any]) -> Maybe[Dict[str, ConsensusResult]]:
+        """
+        Process signals using functional programming patterns.
+        Returns Maybe containing symbol consensus results or None if processing fails.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            self.logger.warning("Functional programming utilities not available, using fallback")
+            return Maybe.none() if FUNCTIONAL_AVAILABLE else type('Maybe', (), {'is_some': lambda: False})()
+        
+        try:
+            # Group signals by symbol using functional approach
+            symbol_signals = {}
+            
+            for agent_name, agent_signals in strategy_signals.items():
+                if not isinstance(agent_signals, dict):
+                    continue
+                
+                for symbol, signal_data in agent_signals.items():
+                    if symbol not in symbol_signals:
+                        symbol_signals[symbol] = []
+                    
+                    # Create signal dictionary for functional processor
+                    signal_dict = {
+                        'source': agent_name,
+                        'strength': signal_data.get('signal', 0),
+                        'confidence': signal_data.get('confidence', 0.5),
+                        'timestamp': datetime.now(),
+                        'metadata': {
+                            'symbol': symbol,
+                            'regime': regime_analysis.get('volatility_regime', 'NORMAL'),
+                            'original_data': signal_data
+                        }
+                    }
+                    symbol_signals[symbol].append(signal_dict)
+            
+            # Process each symbol using functional signal processor
+            consensus_results = {}
+            
+            for symbol, signals in symbol_signals.items():
+                if len(signals) >= self.min_confirming_sources:
+                    consensus_result = process_signals(
+                        signals, 
+                        min_confidence=0.3,
+                        min_sources=self.min_confirming_sources
+                    )
+                    consensus_results[symbol] = consensus_result
+            
+            return Maybe.some(consensus_results)
+            
+        except Exception as e:
+            self.logger.error(f"Functional signal processing failed: {e}")
+            return Maybe.none()
+    
+    def _compose_validation_pipeline(self) -> Callable[[Dict[str, Any]], Either]:
+        """
+        Create a composed validation pipeline using functional composition.
+        Returns Either with validated signals or error.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            # Simple validation fallback
+            def pipeline(signals):
+                try:
+                    return type('Either', (), {
+                        'is_right': lambda: True,
+                        'right': signals,
+                        'get_or_else': lambda x: signals
+                    })()
+                except Exception as e:
+                    return type('Either', (), {
+                        'is_right': lambda: False,
+                        'left': str(e),
+                        'get_or_else': lambda x: x
+                    })()
+            return pipeline
+        
+        from ....functional_utils import FunctionalOps
+        
+        # Define individual validation steps
+        def validate_structure(signals):
+            """Validate signal structure."""
+            if not isinstance(signals, dict):
+                raise ValueError("Signals must be a dictionary")
+            return signals
+        
+        def validate_completeness(signals):
+            """Validate signal completeness."""
+            for symbol, signal_data in signals.items():
+                if not isinstance(signal_data, dict):
+                    raise ValueError(f"Signal data for {symbol} must be a dictionary")
+                if 'signal' not in signal_data:
+                    raise ValueError(f"Signal data for {symbol} missing 'signal' field")
+            return signals
+        
+        def validate_ranges(signals):
+            """Validate signal value ranges."""
+            for symbol, signal_data in signals.items():
+                signal_value = signal_data.get('signal', 0)
+                if not -2 <= signal_value <= 2:
+                    self.logger.warning(f"Signal for {symbol} out of expected range: {signal_value}")
+            return signals
+        
+        # Compose validation pipeline
+        return FunctionalOps.chain_safe_calls(
+            validate_structure,
+            validate_completeness,
+            validate_ranges
+        )
+    
+    async def _parallel_symbol_processing(self, symbol_signals: Dict[str, List[Dict[str, Any]]],
+                                        regime_analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process multiple symbols in parallel using functional programming patterns.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            # Sequential fallback
+            results = {}
+            for symbol, signals in symbol_signals.items():
+                results[symbol] = await self._process_single_symbol(symbol, signals, regime_analysis)
+            return results
+        
+        from ....functional_utils import ParallelOps
+        
+        # Create processing function for single symbol
+        def process_symbol_func(symbol_data):
+            symbol, signals = symbol_data
+            # Use functional signal processor
+            consensus_result = process_signals(
+                signals,
+                min_confidence=0.3,
+                min_sources=self.min_confirming_sources
+            )
+            
+            return {
+                'symbol': symbol,
+                'consensus': consensus_result,
+                'signal_count': len(signals)
+            }
+        
+        try:
+            # Process symbols in parallel
+            symbol_items = list(symbol_signals.items())
+            results = ParallelOps.parallel_map(
+                process_symbol_func, 
+                symbol_items,
+                max_workers=min(4, len(symbol_items))
+            )
+            
+            # Convert back to dictionary
+            return {result['symbol']: result for result in results}
+            
+        except Exception as e:
+            self.logger.error(f"Parallel processing failed: {e}")
+            # Fallback to sequential
+            results = {}
+            for symbol, signals in symbol_signals.items():
+                results[symbol] = await self._process_single_symbol(symbol, signals, regime_analysis)
+            return results
+    
+    def _functional_consensus_analysis(self, consensus_results: Dict[str, ConsensusResult]) -> Dict[str, Any]:
+        """
+        Analyze consensus results using functional programming patterns.
+        """
+        if not FUNCTIONAL_AVAILABLE or not consensus_results:
+            return {'error': 'No functional utilities or consensus results available'}
+        
+        # Convert to functional list for analysis
+        results_list = fl(list(consensus_results.values()))
+        
+        # Filter valid consensus results
+        valid_results = results_list.filter(lambda r: r.is_valid)
+        
+        if valid_results.is_empty():
+            return {
+                'total_symbols': len(consensus_results),
+                'valid_consensus': 0,
+                'consensus_rate': 0.0,
+                'average_confidence': 0.0,
+                'strength_distribution': {}
+            }
+        
+        # Calculate statistics functionally
+        consensus_strengths = valid_results.map(lambda r: r.consensus_strength)
+        agreement_ratios = valid_results.map(lambda r: r.agreement_ratio)
+        
+        # Calculate strength distribution
+        strength_groups = valid_results.group_by(
+            lambda r: 'strong' if r.consensus_strength > 0.8 
+                     else 'medium' if r.consensus_strength > 0.5 
+                     else 'weak'
+        )
+        
+        return {
+            'total_symbols': len(consensus_results),
+            'valid_consensus': len(valid_results),
+            'consensus_rate': len(valid_results) / len(consensus_results),
+            'average_strength': sum(consensus_strengths) / len(consensus_strengths),
+            'average_agreement': sum(agreement_ratios) / len(agreement_ratios),
+            'strength_distribution': {
+                'strong': len(strength_groups.get('strong', fl([]))),
+                'medium': len(strength_groups.get('medium', fl([]))),
+                'weak': len(strength_groups.get('weak', fl([])))
+            },
+            'min_strength': min(consensus_strengths) if consensus_strengths else 0,
+            'max_strength': max(consensus_strengths) if consensus_strengths else 0,
+            'outlier_rate': sum(len(r.outlier_signals) for r in valid_results) / 
+                          sum(len(r.participating_signals) + len(r.outlier_signals) for r in valid_results)
+        }
+    
+    def _create_recommendation_pipeline(self) -> Callable:
+        """
+        Create a functional pipeline for generating final recommendations.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            def pipeline(consensus_results):
+                return [
+                    {
+                        'symbol': symbol,
+                        'action': 'hold',
+                        'confidence': 0.5,
+                        'position_size': 0
+                    }
+                    for symbol in consensus_results.keys()
+                ]
+            return pipeline
+            
+        from ....functional_utils import FunctionalOps
+        
+        def filter_valid_consensus(results):
+            """Filter for valid consensus results."""
+            return {
+                symbol: result for symbol, result in results.items()
+                if result.is_valid and result.consensus_signal is not None
+            }
+        
+        def rank_by_confidence(results):
+            """Rank results by consensus strength."""
+            ranked = sorted(
+                results.items(),
+                key=lambda x: x[1].consensus_strength,
+                reverse=True
+            )
+            return dict(ranked)
+        
+        def generate_recommendations(results):
+            """Generate final recommendations."""
+            recommendations = []
+            
+            for symbol, consensus_result in results.items():
+                signal = consensus_result.consensus_signal
+                
+                recommendation = {
+                    'symbol': symbol,
+                    'action': self._signal_to_action(signal.signal_type),
+                    'strength': signal.strength,
+                    'confidence': signal.confidence,
+                    'consensus_strength': consensus_result.consensus_strength,
+                    'agreement_ratio': consensus_result.agreement_ratio,
+                    'participating_sources': len(consensus_result.participating_signals),
+                    'position_size': self._calculate_position_size(signal),
+                    'metadata': {
+                        'consensus_details': consensus_result.validation_details,
+                        'outliers_detected': len(consensus_result.outlier_signals),
+                        'signal_metadata': signal.metadata
+                    }
+                }
+                recommendations.append(recommendation)
+            
+            return recommendations
+        
+        # Compose the pipeline
+        return FunctionalOps.pipe(
+            filter_valid_consensus,
+            rank_by_confidence,
+            generate_recommendations
+        )
+    
+    def _signal_to_action(self, signal_type) -> str:
+        """Convert signal type to action string."""
+        from .functional_signal_processor import SignalType
+        
+        action_map = {
+            SignalType.STRONG_BUY: 'strong_buy',
+            SignalType.BUY: 'buy',
+            SignalType.HOLD: 'hold',
+            SignalType.SELL: 'sell',
+            SignalType.STRONG_SELL: 'strong_sell'
+        }
+        
+        return action_map.get(signal_type, 'hold')
+    
+    def _calculate_position_size(self, signal) -> float:
+        """Calculate position size based on signal strength and confidence."""
+        base_size = 0.02  # 2% of portfolio
+        adjusted_size = base_size * abs(signal.strength) * signal.confidence
+        
+        # Apply signal direction
+        return adjusted_size if signal.strength > 0 else -adjusted_size
+    
+    async def _process_single_symbol(self, symbol: str, signals: List[Dict[str, Any]], 
+                                   regime_analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a single symbol's signals (fallback method)."""
+        try:
+            # Simple consensus calculation
+            if len(signals) < self.min_confirming_sources:
+                return {'symbol': symbol, 'valid': False, 'reason': 'insufficient_sources'}
+            
+            # Calculate weighted average
+            total_weight = sum(s.get('confidence', 0.5) for s in signals)
+            if total_weight == 0:
+                return {'symbol': symbol, 'valid': False, 'reason': 'no_confidence'}
+            
+            weighted_signal = sum(
+                s.get('strength', 0) * s.get('confidence', 0.5) 
+                for s in signals
+            ) / total_weight
+            
+            avg_confidence = total_weight / len(signals)
+            
+            return {
+                'symbol': symbol,
+                'valid': avg_confidence >= 0.5,
+                'signal': weighted_signal,
+                'confidence': avg_confidence,
+                'source_count': len(signals)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error processing symbol {symbol}: {e}")
+            return {'symbol': symbol, 'valid': False, 'error': str(e)}

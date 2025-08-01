@@ -77,13 +77,13 @@ memory:
 
 # RAG Configuration
 rag:
-  enabled: true
+  enabled: false
   hybrid:
     bm25_weight: 0.3
     vector_weight: 0.7
     fusion_method: "reciprocal_rank"
   vector_store:
-    provider: "faiss" 
+    provider: "chroma" 
     embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
     dimensions: 384
   search:

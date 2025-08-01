@@ -1,13 +1,29 @@
 """
 Mathematical utilities for the trading system.
+
+This module integrates functional programming patterns for enhanced reliability,
+composability, and immutability in mathematical operations.
 """
 
 import numpy as np
 import pandas as pd
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, List, Callable
 from scipy import stats
 from scipy.optimize import minimize
 import warnings
+from functools import partial, reduce
+
+# Import functional programming utilities from global ClaudeCode level
+try:
+    from ....functional_utils import Maybe, Either, FunctionalList, FunctionalOps, fl, fmap, ffilter
+    from ....functional_math import FunctionalMath, safe_returns, risk_pipeline
+    FUNCTIONAL_AVAILABLE = True
+except ImportError:
+    FUNCTIONAL_AVAILABLE = False
+    warnings.warn("Functional programming utilities not available. Install ClaudeCode functional modules.")
+
+# Import for backward compatibility
+import functools
 
 
 class MathUtils:
@@ -410,3 +426,266 @@ class MathUtils:
             raise ValueError("Method must be 'variance' or 'mean'")
         
         return regimes.values if isinstance(regimes, pd.Series) else regimes
+    
+    # ============================================================================
+    # Functional Programming Enhanced Methods
+    # ============================================================================
+    
+    @staticmethod
+    def safe_calculate_returns(prices: Union[pd.Series, np.ndarray, List[float]], 
+                              method: str = "simple") -> 'Maybe[Union[pd.Series, np.ndarray]]':
+        """
+        Calculate returns safely using functional programming patterns.
+        Returns Maybe monad for safe error handling.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            # Fallback to original method
+            try:
+                result = MathUtils.calculate_returns(prices, method)
+                return type('Maybe', (), {'value': result, 'is_some': lambda: True, 'get_or_else': lambda default: result})()
+            except Exception:
+                return type('Maybe', (), {'value': None, 'is_some': lambda: False, 'get_or_else': lambda default: default})()
+        
+        try:
+            if isinstance(prices, list):
+                prices = np.array(prices)
+            
+            if len(prices) < 2:
+                return Maybe.none()
+            
+            result = MathUtils.calculate_returns(prices, method)
+            return Maybe.some(result)
+        except Exception:
+            return Maybe.none()
+    
+    @staticmethod
+    def functional_portfolio_optimization(returns: List[List[float]], 
+                                        risk_free_rate: float = 0.0) -> 'Maybe[Tuple[np.ndarray, float, float]]':
+        """
+        Portfolio optimization using functional programming patterns.
+        Returns Maybe with (weights, expected_return, volatility) or None if optimization fails.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            return Maybe.none() if FUNCTIONAL_AVAILABLE else type('Maybe', (), {'is_some': lambda: False})()
+        
+        try:
+            # Convert to functional lists
+            return_series = fl([fl(asset_returns) for asset_returns in returns])
+            
+            # Calculate statistics functionally
+            means = return_series.map(lambda asset: FunctionalMath.safe_mean(asset))
+            
+            # Check if all means calculated successfully
+            if any(mean.is_none() for mean in means):
+                return Maybe.none()
+            
+            mean_returns = np.array([mean.value for mean in means])
+            
+            # Convert back to numpy for covariance calculation
+            returns_matrix = np.array(returns).T
+            cov_matrix = np.cov(returns_matrix, rowvar=False)
+            
+            # Optimize portfolio
+            n_assets = len(mean_returns)
+            weights = np.ones(n_assets) / n_assets  # Equal weights as starting point
+            
+            def objective(w):
+                portfolio_return = np.dot(w, mean_returns)
+                portfolio_variance = np.dot(w.T, np.dot(cov_matrix, w))
+                sharpe = (portfolio_return - risk_free_rate) / np.sqrt(portfolio_variance) if portfolio_variance > 0 else 0
+                return -sharpe  # Minimize negative Sharpe ratio
+            
+            constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
+            bounds = tuple((0, 1) for _ in range(n_assets))
+            
+            result = minimize(objective, weights, method='SLSQP', bounds=bounds, constraints=constraints)
+            
+            if result.success:
+                optimal_weights = result.x
+                expected_return = np.dot(optimal_weights, mean_returns)
+                volatility = np.sqrt(np.dot(optimal_weights.T, np.dot(cov_matrix, optimal_weights)))
+                return Maybe.some((optimal_weights, expected_return, volatility))
+            else:
+                return Maybe.none()
+                
+        except Exception:
+            return Maybe.none()
+    
+    @staticmethod
+    def compose_risk_calculations(*risk_functions: Callable) -> Callable:
+        """
+        Compose multiple risk calculation functions into a single pipeline.
+        Uses functional composition for clean, reusable risk analysis.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            # Simple composition fallback
+            return lambda data: reduce(lambda result, func: func(result), risk_functions, data)
+        
+        return FunctionalOps.compose(*risk_functions)
+    
+    @staticmethod
+    def parallel_asset_analysis(price_data: Dict[str, List[float]], 
+                               analysis_func: Callable[[List[float]], Any],
+                               max_workers: int = None) -> Dict[str, Any]:
+        """
+        Analyze multiple assets in parallel using functional programming.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            # Sequential fallback
+            return {asset: analysis_func(prices) for asset, prices in price_data.items()}
+        
+        from ....functional_utils import ParallelOps
+        
+        assets = list(price_data.keys())
+        price_lists = list(price_data.values())
+        
+        results = ParallelOps.parallel_map(analysis_func, price_lists, max_workers)
+        return dict(zip(assets, results))
+    
+    @staticmethod
+    def rolling_functional_analysis(prices: Union[pd.Series, List[float]], 
+                                   window_size: int,
+                                   analysis_func: Callable[[List[float]], Any]) -> List[Any]:
+        """
+        Apply functional analysis over rolling windows.
+        """
+        if isinstance(prices, pd.Series):
+            prices = prices.tolist()
+        
+        if not FUNCTIONAL_AVAILABLE:
+            # Simple rolling analysis
+            results = []
+            for i in range(window_size - 1, len(prices)):
+                window_data = prices[i - window_size + 1:i + 1]
+                results.append(analysis_func(window_data))
+            return results
+        
+        # Functional approach
+        price_list = fl(prices)
+        windows = []
+        
+        for i in range(window_size - 1, len(prices)):
+            window = price_list._items[i - window_size + 1:i + 1]
+            windows.append(list(window))
+        
+        return fl(windows).map(analysis_func)._items
+    
+    @staticmethod
+    def chain_transformations(*transformations: Callable) -> Callable:
+        """
+        Chain multiple data transformations into a single function.
+        Useful for preprocessing pipelines.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            return lambda data: reduce(lambda result, transform: transform(result), transformations, data)
+        
+        return FunctionalOps.pipe(*transformations)
+    
+    @staticmethod
+    def safe_math_operation(operation: Callable, *args, **kwargs) -> 'Either':
+        """
+        Perform mathematical operation safely with error handling.
+        Returns Either monad with result or error.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            try:
+                result = operation(*args, **kwargs)
+                return type('Either', (), {
+                    'is_right': lambda: True, 
+                    'is_left': lambda: False,
+                    'right': result,
+                    'get_or_else': lambda default: result
+                })()
+            except Exception as e:
+                return type('Either', (), {
+                    'is_right': lambda: False, 
+                    'is_left': lambda: True,
+                    'left': e,
+                    'get_or_else': lambda default: default
+                })()
+        
+        return FunctionalOps.safe_call(operation, *args, **kwargs)
+    
+    @staticmethod
+    def create_risk_analysis_pipeline(risk_free_rate: float = 0.0) -> Callable:
+        """
+        Create a comprehensive risk analysis pipeline using functional composition.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            def pipeline(prices):
+                try:
+                    returns = MathUtils.calculate_returns(prices)
+                    return {
+                        'volatility': MathUtils.calculate_volatility(returns),
+                        'sharpe': MathUtils.calculate_sharpe_ratio(returns, risk_free_rate),
+                        'var': MathUtils.calculate_var(returns),
+                        'max_drawdown': MathUtils.calculate_max_drawdown(prices)[0]
+                    }
+                except Exception as e:
+                    return {'error': str(e)}
+            return pipeline
+        
+        def pipeline(prices: List[float]) -> Dict[str, Any]:
+            """Complete risk analysis pipeline."""
+            maybe_result = risk_pipeline(prices)
+            
+            if maybe_result.is_none():
+                return {'error': 'Risk calculation failed'}
+            
+            risk_metrics = maybe_result.value
+            return {
+                'volatility': risk_metrics.volatility,
+                'var_95': risk_metrics.var_95,
+                'cvar_95': risk_metrics.cvar_95,
+                'max_drawdown': risk_metrics.max_drawdown,
+                'sharpe_ratio': risk_metrics.sharpe_ratio,
+                'sortino_ratio': risk_metrics.sortino_ratio,
+                'calmar_ratio': risk_metrics.calmar_ratio
+            }
+        
+        return pipeline
+    
+    @staticmethod
+    def batch_process_assets(asset_data: Dict[str, Any], 
+                           processors: List[Callable],
+                           batch_size: int = 10) -> Dict[str, Dict[str, Any]]:
+        """
+        Process multiple assets in batches using functional programming patterns.
+        """
+        if not FUNCTIONAL_AVAILABLE:
+            # Simple sequential processing
+            results = {}
+            for asset, data in asset_data.items():
+                asset_results = {}
+                for i, processor in enumerate(processors):
+                    try:
+                        asset_results[f'processor_{i}'] = processor(data)
+                    except Exception as e:
+                        asset_results[f'processor_{i}'] = {'error': str(e)}
+                results[asset] = asset_results
+            return results
+        
+        # Functional batch processing
+        assets = list(asset_data.keys())
+        data_list = list(asset_data.values())
+        
+        # Process in batches
+        results = {}
+        for i in range(0, len(assets), batch_size):
+            batch_assets = assets[i:i + batch_size]
+            batch_data = data_list[i:i + batch_size]
+            
+            # Apply all processors to batch
+            for asset, data in zip(batch_assets, batch_data):
+                asset_results = {}
+                processor_pipeline = FunctionalOps.compose(*processors)
+                
+                result = FunctionalOps.safe_call(processor_pipeline, data)
+                if result.is_right():
+                    asset_results['combined_result'] = result.right
+                else:
+                    asset_results['error'] = str(result.left)
+                
+                results[asset] = asset_results
+        
+        return results

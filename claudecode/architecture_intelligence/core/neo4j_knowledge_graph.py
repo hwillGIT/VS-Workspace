@@ -156,7 +156,8 @@ class Neo4jKnowledgeGraph:
             "CREATE INDEX document_source IF NOT EXISTS FOR (d:Document) ON (d.source)",
             "CREATE INDEX extraction_date IF NOT EXISTS FOR (p:Pattern) ON (p.extraction_date)",
             "CREATE INDEX conflict_type IF NOT EXISTS FOR (c:Conflict) ON (c.conflict_type)",
-            "CREATE INDEX knowledge_scope IF NOT EXISTS FOR (n) ON (n.scope) WHERE n:Pattern OR n:Principle"
+            "CREATE INDEX pattern_scope IF NOT EXISTS FOR (n:Pattern) ON (n.scope)",
+            "CREATE INDEX principle_scope IF NOT EXISTS FOR (n:Principle) ON (n.scope)"
         ]
         
         with self.driver.session(database=self.database) as session:

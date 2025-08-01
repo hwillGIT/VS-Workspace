@@ -117,10 +117,18 @@ pytest-asyncio>=0.21.0
 black>=22.0.0
 EOF
 
+    # Add circular dependency prevention dependencies
+    cat >> "$INSTALL_DIR/requirements.txt" << 'EOF'
+
+# Circular dependency prevention
+networkx>=2.8.0
+matplotlib>=3.5.0
+EOF
+
     # Install in user mode to avoid permission issues
     python3 -m pip install --user -r "$INSTALL_DIR/requirements.txt"
     
-    log_success "Dependencies installed"
+    log_success "Dependencies installed (including circular dependency prevention)"
 }
 
 # Download and install core files
@@ -270,6 +278,14 @@ EOF
 
     chmod +x "$INSTALL_DIR/scripts/claude_team_init.py"
     
+    # Copy circular dependency prevention system
+    if [ -d "team_framework/circular_dependency" ]; then
+        cp -r team_framework/circular_dependency "$INSTALL_DIR/"
+        log_success "Circular dependency prevention system installed"
+    else
+        log_warning "Circular dependency system not found - skipping"
+    fi
+    
     log_success "Core files installed"
 }
 
@@ -308,6 +324,14 @@ case "$1" in
     "code-review"|"security-audit"|"performance-audit"|"debug-session"|"architecture-review"|"test-generation")
         python3 "$CONTEXT_SCRIPT" "$PROJECT_NAME" "$@"
         ;;
+    "check-deps"|"analyze-deps")
+        if [ -f "$CLAUDE_TEAM_DIR/circular_dependency/analyzer.py" ]; then
+            python3 "$CLAUDE_TEAM_DIR/circular_dependency/analyzer.py" "${2:-.}" "${@:3}"
+        else
+            echo "[ERROR] Circular dependency analyzer not installed"
+            exit 1
+        fi
+        ;;
     "list"|"--list"|"-l")
         python3 "$CONTEXT_SCRIPT" "$PROJECT_NAME" --list
         ;;
@@ -324,12 +348,14 @@ case "$1" in
         echo "  debug-session        Start debugging session with project context"
         echo "  architecture-review  Review system architecture with team knowledge"
         echo "  test-generation      Generate tests with project patterns"
+        echo "  check-deps           Analyze circular dependencies in current project"
         echo "  list                 List all available workflows"
         echo ""
         echo "Examples:"
         echo "  claude-team init                              # Setup current project"
         echo "  claude-team code-review --focus 'auth module'  # Review with context"
         echo "  claude-team security-audit --focus 'API endpoints'  # Security audit"
+        echo "  claude-team check-deps --export analysis.json      # Dependency analysis"
         echo ""
         ;;
     *)

@@ -11,8 +11,32 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(gh repo create:*)",
-      "Bash(git remote add:*)"
+      "Bash(git remote add:*)",
+      "Bash(powershell:*)",
+      "Bash(chroma run:*)",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(.venvScriptsactivate)",
+      "Bash(venvScriptspython.exe -m pip install:*)",
+      "Bash(\"D:\\VS Workspace\\ChromaDB\\venv\\Scripts\\pip.exe\" install chromadb)",
+      "Bash(\"D:\\VS Workspace\\ChromaDB\\venv\\Scripts\\pip.exe\" show chromadb)",
+      "Bash(\"D:\\VS Workspace\\ChromaDB\\venv\\Scripts\\python.exe\" -m chromadb run --host localhost --port 8000)",
+      "Bash(\"D:\\VS Workspace\\ChromaDB\\venv\\Scripts\\chroma.exe\" --help)",
+      "Bash(\"D:\\VS Workspace\\ChromaDB\\venv\\Scripts\\chroma.exe\" run --host localhost --port 8000)",
+      "Bash(cp:*)",
+      "Bash(npm install:*)",
+      "Bash(cipher:*)",
+      "Bash(\"C:\\Users\\huber\\AppData\\Roaming\\npm\\cipher.cmd\" --help)",
+      "Bash(set)",
+      "Bash(rm:*)",
+      "Bash(npx cipher:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:ai.google.dev)",
+      "WebFetch(domain:cloud.google.com)"
     ],
-    "deny": []
+    "deny": [],
+    "additionalDirectories": [
+      "G:\\Downloads"
+    ]
   }
 }

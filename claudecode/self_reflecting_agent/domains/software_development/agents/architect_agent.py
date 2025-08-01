@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 from pathlib import Path
 
 from ....agents.base_agent import BaseAgent
-from ....dspy_integration.signatures import create_signature
+from ....dspy_integration.signatures import AgentSignatures
 
 
 class ArchitectAgent(BaseAgent):
@@ -46,37 +46,18 @@ class ArchitectAgent(BaseAgent):
         """Setup DSPy signatures for architecture tasks."""
         
         if self.dspy_enabled and self.dspy_manager:
+            self.agent_signatures = AgentSignatures()
             # System Design Signature
-            self.system_design_signature = create_signature(
-                "SystemDesign",
-                input_fields=["requirements", "constraints", "context"],
-                output_fields=["architecture_overview", "components", "patterns", "rationale"],
-                description="Design system architecture based on requirements and constraints"
-            )
+            self.system_design_signature = self.agent_signatures.get_signature("system_design")
             
             # Scalability Analysis Signature  
-            self.scalability_analysis_signature = create_signature(
-                "ScalabilityAnalysis",
-                input_fields=["current_architecture", "expected_load", "growth_projections"],
-                output_fields=["bottlenecks", "recommendations", "scaling_strategy", "risk_assessment"],
-                description="Analyze system scalability and provide improvement recommendations"
-            )
+            self.scalability_analysis_signature = self.agent_signatures.get_signature("scalability_analysis")
             
             # Technical Debt Assessment Signature
-            self.tech_debt_signature = create_signature(
-                "TechnicalDebtAssessment", 
-                input_fields=["codebase_analysis", "architecture_review", "maintenance_history"],
-                output_fields=["debt_areas", "severity_scores", "refactoring_priorities", "cost_estimates"],
-                description="Assess technical debt and prioritize refactoring efforts"
-            )
+            self.tech_debt_signature = self.agent_signatures.get_signature("technical_debt_assessment")
             
             # Pattern Recommendation Signature
-            self.pattern_recommendation_signature = create_signature(
-                "PatternRecommendation",
-                input_fields=["problem_description", "current_solution", "constraints"],
-                output_fields=["recommended_patterns", "implementation_guidance", "trade_offs", "alternatives"],
-                description="Recommend design patterns for specific architectural problems"
-            )
+            self.pattern_recommendation_signature = self.agent_signatures.get_signature("pattern_recommendation")
     
     async def design_system_architecture(
         self,

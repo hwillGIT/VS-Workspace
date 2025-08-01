@@ -258,17 +258,8 @@ class SelfReflectingAgent:
     async def _setup_integrations(self) -> None:
         """Setup integrations between components."""
         
-        # Add project codebase to RAG system if available
-        if self.rag_system and self.project_path.exists():
-            try:
-                await self.rag_system.add_documents_from_directory(
-                    self.project_path,
-                    file_patterns=["*.py", "*.md", "*.txt", "*.json", "*.yaml"],
-                    recursive=True
-                )
-                self.logger.info(f"Added project codebase to RAG system: {self.project_path}")
-            except Exception as e:
-                self.logger.warning(f"Failed to add codebase to RAG: {e}")
+        
+            
     
     async def execute_task(
         self,
